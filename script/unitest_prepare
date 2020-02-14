@@ -1,0 +1,65 @@
+#!/usr/bin/env zsh
+
+pushd $UNITEST_build_DIR
+
+node_name=$1
+template_name=$2
+
+if [[ ! -f ${UNITEST_kcg_DIR}/$node_name/scade_types.h ]]
+then
+	echo "unknown node name, please select one among the following: \n----"
+	ls ${UNITEST_kcg_DIR}
+	echo "----"
+	return 1
+fi
+
+if [[ ! -d ${UNITEST_template_DIR}/${template_name}/include ]]
+then
+	echo "unknown template name, please select one among the following: \n----"
+	ls ${UNITEST_template_DIR}
+	echo "----"
+	return 1
+fi
+
+set -x
+
+if [[ -d ./$node_name/src/scade ]]
+then
+	rm -rf ./$node_name/src/scade
+fi
+
+mkdir -p ./$node_name/src/scade
+cp ${UNITEST_kcg_DIR}/$node_name/*.c ./$node_name/src/scade
+
+if [[ -d ./$node_name/include/scade ]]
+then
+	rm -rf ./$node_name/include/scade
+fi	
+
+
+mkdir -p ./$node_name/include
+
+mkdir ./$node_name/include/scade
+cp ${UNITEST_kcg_DIR}/$node_name/*.h ./$node_name/include/scade
+
+touch ./${node_name}/include/scade/${node_name}_extern.h
+
+cp -r ${UNITEST_template_DIR}/${template_name}/include/fctext ./$node_name/include
+
+pushd $node_name
+
+	clean_scade.py src/scade include/scade
+	
+	# generation d'un fichier permettant la reconstruction du contexte
+	mkdir mapping
+	gcc -E \
+		-std=c99 -pedantic -Wall -Winline -fPIC -fno-strict-aliasing -O2 \
+		-DUNITEST_MODE -D_GNU_SOURCE \
+		-I./include -I./include/scade -I./include/fctext \
+		./src/scade/$node_name.c -o ./mapping/context.i
+		
+	prepare_interface.py $node_name $template_name
+	
+	make clean all
+	
+popd

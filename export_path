@@ -1,0 +1,23 @@
+
+function push_pythonpath() {
+	pth=$1:A
+	echo "+ ${pth}"
+	export PATH=${pth}/script:$PATH
+	export PYTHONPATH=${pth}/package:$PYTHONPATH
+}
+
+
+export UNITEST_root_DIR=${0:a:h}
+export UNITEST_template_DIR=$UNITEST_root_DIR/template
+export UNITEST_build_DIR=$UNITEST_root_DIR/build
+export UNITEST_kcg_DIR=$UNITEST_root_DIR/kcg
+
+source_DIR=$0:A:h
+
+push_pythonpath ${source_DIR}
+
+typeset -T PYTHONPATH pythonpath
+
+typeset -U pythonpath
+typeset -U path
+
