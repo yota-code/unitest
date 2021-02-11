@@ -10,6 +10,8 @@ import numpy as np
 
 from cc_pathlib import Path
 
+import structarray
+
 def to_str(s) :
 	if isinstance(s, int) :
 		return '{0}'.format(s)
@@ -21,38 +23,35 @@ def to_str(s) :
 class UnitestReplay() :
 	
 	struct_map = {
-		"real" : 'f',
-		"integer" : 'i',
-		"boolean" : 'i',
-		"pointer" : 'P',
+		"R4" : 'f',
+		"Z4" : 'i',
+		"B4" : 'i',
+		"P4" : 'P',
 	}
 	
 	def __init__(self, node_name, replay_no) :
 		self.node_name = node_name
 		self.replay_no = replay_no
 		
-		self.node_dir = Path(os.environ["UNITEST_build_DIR"]) / node_name
+		self.node_dir = Path(os.environ["UNITEST_build_DIR"]).resolve() / node_name
 		self.replay_dir = self.node_dir / "replay" / replay_no
 		
 		self.load_io()
 		
-		self.meta = dict()
-		self.data = dict()
-		
 		self.data_len = None
-		self.data_pth = self.replay_dir / "full.reb"
+		self.data_pth = self.replay_dir / "context.reb"
 		
 	def load_io(self) :
 		self.input_lst = (self.node_dir / "mapping" / "input.tsv").load()
-		#print(self.input_lst)
 		self.input_fmt = self.get_struct(self.input_lst)
+		print("P sizeof(unitest_input_T) = {0} -- {1}".format(self.input_fmt.size, self.input_fmt.format))
+
 		self.output_lst = (self.node_dir / "mapping" / "output.tsv").load()
 		self.output_fmt = self.get_struct(self.output_lst)
-		print("P sizeof(unitest_input_T) = {0} -- {1}".format(self.input_fmt.size, self.input_fmt.format))
 		print("P sizeof(unitest_output_T) = {0} -- {1}".format(self.output_fmt.size, self.output_fmt.format))
 
 	def get_struct(self, var_lst) :
-		fmt = ''.join(self.struct_map[ctype] for member, ctype in var_lst)
+		fmt = ''.join(self.struct_map[ctype] for name, ctype in var_lst)
 		return struct.Struct(fmt)
 		
 	def dump_output(self) :
@@ -122,15 +121,16 @@ class UnitestReplay() :
 	def run_node(self) :
 		subprocess.run('../../main.exe', cwd=self.replay_dir)
 		
-	def full_to_tsv(self) :
-		self._load_meta(self.node_dir / "mapping" / "context.tsv")
-		self._load_data()
-		self._dump_tsv()
-		
-		shortcut = self.replay_dir / "../full.tsv"
-		if shortcut.is_file() :
-			os.unlink(shortcut)
-		os.symlink(self.replay_dir / "full.tsv", shortcut)
+	def to_tsv(self) :
+
+		u = structarray.StructArray(
+			self.node_dir / "mapping" / "context.tsv",
+			self.replay_dir / "context.reb",
+
+		)
+		u.to_tsv(self.replay_dir / "context.tsv")
+
+		return
 		
 	def _load_meta(self, meta_pth) :
 		self.meta_pth = meta_pth
@@ -174,7 +174,7 @@ class UnitestReplay() :
 				to_str(self.data[k][i]) for k in self.data
 			])
 		print(self.data_len)
-		(self.replay_dir / "full.tsv").write_text('\n'.join('\t'.join(line) for line in stack))
+		(self.replay_dir / "context.tsv").write_text('\n'.join('\t'.join(line) for line in stack))
 
 		
 if __name__ == '__main__' :
@@ -182,7 +182,7 @@ if __name__ == '__main__' :
 	# u = UnitestReplay('integ', "002")
 	u.prepare_trajectory()
 	u.run_node()
-	u.full_to_tsv()
+	u.context_to_tsv()
 
 	
 	

@@ -52,7 +52,7 @@ def load_binary(pth, info) :
 	return value_map
 
 
-def analyze_rec(node="q_TrajGenerator2", replay="001") :
+def analyze_rec(node, replay="01") :
 	replay_dir = unitest_dir / node / "replay" / replay
 	
 	scade_map = json.loads((replay_dir / "../info.json").read_text())

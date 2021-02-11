@@ -1,11 +1,12 @@
 #!/usr/bin/env zsh
 
+mkdir -p $UNITEST_build_DIR
 pushd $UNITEST_build_DIR
 
-node_name=$1
+model=$1
 template_name=$2
 
-if [[ ! -f ${UNITEST_kcg_DIR}/$node_name/scade_types.h ]]
+if [[ ! -f ${UNITEST_kcg_DIR}/$model/scade_types.h ]]
 then
 	echo "unknown node name, please select one among the following: \n----"
 	ls ${UNITEST_kcg_DIR}
@@ -23,42 +24,48 @@ fi
 
 set -x
 
-if [[ -d ./$node_name/src/scade ]]
+if [[ -d ./$model/src/scade ]]
 then
-	rm -rf ./$node_name/src/scade
+	rm -rf ./$model/src/scade
 fi
 
-mkdir -p ./$node_name/src/scade
-cp ${UNITEST_kcg_DIR}/$node_name/*.c ./$node_name/src/scade
+mkdir -p ./$model/src/scade
+cp ${UNITEST_kcg_DIR}/$model/*.c ./$model/src/scade
 
-if [[ -d ./$node_name/include/scade ]]
+if [[ -d ./$model/include/scade ]]
 then
-	rm -rf ./$node_name/include/scade
-fi	
+	rm -rf ./$model/include/scade
+fi
 
+mkdir -p ./$model/include
 
-mkdir -p ./$node_name/include
+mkdir ./$model/include/scade
+cp ${UNITEST_kcg_DIR}/$model/*.h ./$model/include/scade
 
-mkdir ./$node_name/include/scade
-cp ${UNITEST_kcg_DIR}/$node_name/*.h ./$node_name/include/scade
+pushd ./$model/include/scade
 
-touch ./${node_name}/include/scade/${node_name}_extern.h
+if [[ -f ${model}_extern.h ]]
+then
+	echo "#include \"${model}_main.h\"\n\n" | > tmp
+	cat ${model}_extern.h >> tmp
+	mv tmp ${model}_extern.h
+fi
+popd
 
-cp -r ${UNITEST_template_DIR}/${template_name}/include/fctext ./$node_name/include
+touch ./${model}/include/scade/${model}_extern.h
 
-pushd $node_name
+# for fctext, files are copied over, exiting files are overwritten by the ones in the template
+cp -r ${UNITEST_template_DIR}/${template_name}/include/fctext ./$model/include
+
+pushd $model
 
 	clean_scade.py src/scade include/scade
-	
-	# generation d'un fichier permettant la reconstruction du contexte
-	mkdir mapping
-	gcc -E \
-		-std=c99 -pedantic -Wall -Winline -fPIC -fno-strict-aliasing -O2 \
-		-DUNITEST_MODE -D_GNU_SOURCE \
-		-I./include -I./include/scade -I./include/fctext \
-		./src/scade/$node_name.c -o ./mapping/context.i
-		
-	prepare_interface.py $node_name $template_name
+
+	ln -snf ${model}_extern.h include/scade/model_extern.h
+
+	# unitest_map_context $model
+			
+	_unitest_prepare_interface.py $model $template_name
 	
 	make clean all
 	

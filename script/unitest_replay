@@ -3,6 +3,11 @@
 import argparse
 import sys
 
+from cc_pathlib import Path
+
+import cc_pathlib
+print(cc_pathlib.__file__)
+
 import unitest.replay
 
 pa = argparse.ArgumentParser(description='replay a given scenario')
@@ -16,5 +21,7 @@ u = unitest.replay.UnitestReplay(ap.node_name, ap.replay_dir)
 
 u.prepare_trajectory()
 u.run_node()
-u.full_to_tsv()
+u.to_tsv()
 u.dump_output()
+
+(u.replay_dir.parent / 'context.tsv').hardlink_to(u.replay_dir / 'context.tsv')

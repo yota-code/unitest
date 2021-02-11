@@ -3,7 +3,10 @@
 import os
 import sys
 
-from pathlib import Path
+from cc_pathlib import Path
+
+import structarray
+import structarray.tools
 
 import unitest
 
@@ -15,8 +18,21 @@ if __name__ == '__main__' :
 	node_dir = Path(os.environ['UNITEST_build_DIR']) / node_name
 	if not node_dir.is_dir() :
 		raise ValueError("Not a valid directory:{0}".format(node_dir))
-			
-	scade_map = unitest.scadetype.ScadeType().load(node_dir / 'mapping/context.i')
+
+	scade_map = structarray.tools.scade_map_context(
+		node_dir / "mapping",
+		node_name,
+		[ "../include/scade", "../include/fctext" ]
+	)
+
+	# imple_map = {
+	# 	'P8': "void *",
+	# 	'N4': "uint32_t",
+	# 	'Z4': "int32_t",
+	# 	'R4': "float",
+	# 	'R8': "double",
+	# 	'R2': "half",
+	# }
 	
 	template_dir = Path(os.environ['UNITEST_template_DIR']) / template_name
 	unitest.unroll_template_folder(template_dir, node_dir, {

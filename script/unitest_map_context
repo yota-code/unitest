@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import sys
+
+from cc_pathlib import Path
+
+import structarray
+import structarray.tools
+
+if __name__ == '__main__' :
+
+	include_lst = 
+
+	name = sys.argv[1]
+	structarray.tools.scade_map_context(
+		Path(os.environ['UNITEST_build_DIR']) / name / "mapping",
+		name,
+		include_lst
+	)
