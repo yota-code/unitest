@@ -10,14 +10,15 @@ multiline_rec = re.compile(r'\n\n+')
 
 def clean_file(pth) :
 	print("cleaning source file:{0}".format(pth))
-	txt = pth.read_text(encoding='latin-1')
-	txt = comment_rec.sub('', txt)
+	txt = pth.read_text(encoding='latin1')
+	# if pth.suffix == '.h' :
+	# 	txt = comment_rec.sub('', txt)
 	txt = txt.replace('    ', '\t')
 	txt = txt.replace(')\n{', ') {')
 	txt = multiline_rec.sub('\n\n', txt)
 	txt = txt.strip()
 	txt = txt + '\n'
-	pth.write_text(txt, encoding='latin-1')	
+	pth.write_text(txt, encoding='utf8')	
 
 def clean_folder(fld) :
 	for pth in fld.rglob('*.c') :

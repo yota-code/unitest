@@ -15,12 +15,15 @@ int unitest_interface_${w}(_C_${node_name} * _C_) {
 <%
 path = '.'.join(line[:-1]).replace('*.', '->')
 %>\
+% if w == "input" :
 	_C_->${path} = unitest_${w}._${f'{n:03d}'}_${line[-2].rstrip('*')};
+%elif w == "output" :
+	unitest_${w}._${f'{n:03d}'}_${line[-2].rstrip('*')} = _C_->${path};
+%endif
 		%endif
 %endfor
 
  	return EXIT_SUCCESS;
 
 }
-
 %endfor
