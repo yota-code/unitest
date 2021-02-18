@@ -38,7 +38,7 @@ if [[ -d ./$model/include/scade ]]
 then
 	rm -rf ./$model/include/scade/*.h
 else
-	mkdir -p ./$model/include
+	mkdir -p ./$model/include/scade
 fi
 for file in ${UNITEST_kcg_DIR}/$model/*.h
 do
@@ -48,12 +48,13 @@ done
 
 pushd ./$model/include/scade
 
-if [[ -f ${model}_extern.h ]]
-then
-	echo "#include \"${model}_main.h\"\n\n" | > tmp
-	cat ${model}_extern.h >> tmp
-	mv tmp ${model}_extern.h
-fi
+	if [[ -f ${model}_extern.h ]]
+	then
+		echo "#include \"${model}_main.h\"\n\n" | > tmp
+		cat ${model}_extern.h >> tmp
+		mv tmp ${model}_extern.h
+	fi
+
 popd
 
 touch ./${model}/include/scade/${model}_extern.h
