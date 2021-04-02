@@ -28,6 +28,7 @@ import re
 	context_fid = fopen("context.reb", "wb"); // binary file of the whole structure
 	output_fid = fopen("output.reb", "wb"); // binary file of the ouputs
 		
+	size_t line_count = 0;
 	if ( input_fid != NULL && context_fid != NULL && output_fid != NULL ) {
 		while ( fread(& unitest_input, 1, sizeof(unitest_input_T), input_fid) == sizeof(unitest_input_T) ) {
 			
@@ -35,6 +36,7 @@ import re
 			
 			unitest_interface_input(& unitest_context);
 			
+			line_count += 1;
 			${node_name}(& unitest_context);
 			
 			unitest_interface_output(& unitest_context);
@@ -43,8 +45,10 @@ import re
 			fwrite(& unitest_output, sizeof(unitest_output_T), 1, output_fid);
 			
 		}
+		printf("--> cycle = %ld\n", line_count);
 	} else {
-		printf("ERROR:can not open the replay files\n");
+		// printf("ERROR:can not open the replay files\n");
+		printf("upmv__version__ = %d\n\n", upmv__version__);
 	}
 	
 	if ( input_fid != NULL ) { fclose(input_fid); }

@@ -13,14 +13,14 @@ real s_tbX_average(s_tbX_seg_T * seg, size_t n) {
 	for (size_t i=0 ; i<n ; i++) {
 		real cmd = seg[i].cmd;
 		real dur = seg[i].dur;
-		if ( (t + dur) <= period ) {
+		if ( (t + dur) <= T_CYCLE ) {
 			s += cmd * dur;
 		} else {
-			s += cmd * m_BOUND((period - t), 0.0, period);
+			s += cmd * m_BOUND((T_CYCLE - t), 0.0, T_CYCLE);
 		}
 		t += dur;
 	}
 
-	return s / period;
+	return s * F_CYCLE;
 
 }

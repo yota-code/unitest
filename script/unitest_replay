@@ -24,4 +24,7 @@ u.run_node()
 u.to_tsv()
 u.dump_output()
 
-(u.replay_dir.parent / 'context.tsv').hardlink_to(u.replay_dir / 'context.tsv')
+shortcut_pth = (u.replay_dir.parent / 'context.tsv')
+if shortcut_pth.is_file() :
+	shortcut_pth.unlink()
+shortcut_pth.hardlink_to(u.replay_dir / 'context.tsv')

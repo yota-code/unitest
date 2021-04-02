@@ -27,6 +27,7 @@ class UnitestReplay() :
 		"Z4" : 'i',
 		"B4" : 'i',
 		"P4" : 'P',
+		"Z1" : 'b'
 	}
 	
 	def __init__(self, node_name, replay_no) :
@@ -44,11 +45,11 @@ class UnitestReplay() :
 	def load_io(self) :
 		self.input_lst = (self.node_dir / "mapping" / "input.tsv").load()
 		self.input_fmt = self.get_struct(self.input_lst)
-		print("P sizeof(unitest_input_T) = {0} -- {1}".format(self.input_fmt.size, self.input_fmt.format))
+		print(f"P sizeof(unitest_input_T) = {self.input_fmt.size} x {len(self.input_lst)} -- {self.input_fmt.format}")
 
 		self.output_lst = (self.node_dir / "mapping" / "output.tsv").load()
 		self.output_fmt = self.get_struct(self.output_lst)
-		print("P sizeof(unitest_output_T) = {0} -- {1}".format(self.output_fmt.size, self.output_fmt.format))
+		print(f"P sizeof(unitest_output_T) = {self.output_fmt.size} x {len(self.output_lst)} -- {self.output_fmt.format}")
 
 	def get_struct(self, var_lst) :
 		fmt = ''.join(self.struct_map[ctype] for name, ctype in var_lst)
@@ -132,49 +133,49 @@ class UnitestReplay() :
 
 		return
 		
-	def _load_meta(self, meta_pth) :
-		self.meta_pth = meta_pth
+	# def _load_meta(self, meta_pth) :
+	# 	self.meta_pth = meta_pth
 
-		line_lst = self.meta_pth.read_text().splitlines()
-		self.name, sizeof = line_lst[0].split('\t')
-		self.sizeof = int(sizeof)
-		for line in line_lst[1:] :
-			name, ctype, offset = line.split('\t')
-			self.meta[name] = [ctype, int(offset)]
-		print("P sizeof(unitest_output_T) = {0}".format(self.sizeof))
+	# 	line_lst = self.meta_pth.read_text().splitlines()
+	# 	self.name, sizeof = line_lst[0].split('\t')
+	# 	self.sizeof = int(sizeof)
+	# 	for line in line_lst[1:] :
+	# 		name, ctype, offset = line.split('\t')
+	# 		self.meta[name] = [ctype, int(offset)]
+	# 	print("P sizeof(unitest_output_T) = {0}".format(self.sizeof))
 
-		return self
+	# 	return self
 
-	def _load_data(self) :
-		for name in self.meta :
-			self[name]
-		print(len(self.data))
-		return self
+	# def _load_data(self) :
+	# 	for name in self.meta :
+	# 		self[name]
+	# 	print(len(self.data))
+	# 	return self
 		
-	def __getitem__(self, name) :
-		if name not in self.data :
-			ctype, offset = self.meta[name]
-			stack = list()
-			with self.data_pth.open('rb') as fid :
-				block = fid.read(self.sizeof)
-				while len(block) == self.sizeof :
-					stack.append(struct.unpack_from(self.struct_map[ctype], block, offset)[0])
-					block = fid.read(self.sizeof)
-			self.data[name] = np.array(stack)
-			if self.data_len is not None and self.data_len != len(stack) :
-				raise ValueError("Inconsistent array")
-			self.data_len = len(stack)
-		return self.data[name]
+	# def __getitem__(self, name) :
+	# 	if name not in self.data :
+	# 		ctype, offset = self.meta[name]
+	# 		stack = list()
+	# 		with self.data_pth.open('rb') as fid :
+	# 			block = fid.read(self.sizeof)
+	# 			while len(block) == self.sizeof :
+	# 				stack.append(struct.unpack_from(self.struct_map[ctype], block, offset)[0])
+	# 				block = fid.read(self.sizeof)
+	# 		self.data[name] = np.array(stack)
+	# 		if self.data_len is not None and self.data_len != len(stack) :
+	# 			raise ValueError("Inconsistent array")
+	# 		self.data_len = len(stack)
+	# 	return self.data[name]
 
-	def _dump_tsv(self) :
-		stack = list()
-		stack.append(list(self.data))
-		for i in range(self.data_len) :
-			stack.append([
-				to_str(self.data[k][i]) for k in self.data
-			])
-		print(self.data_len)
-		(self.replay_dir / "context.tsv").write_text('\n'.join('\t'.join(line) for line in stack))
+	# def _dump_tsv(self) :
+	# 	stack = list()
+	# 	stack.append(list(self.data))
+	# 	for i in range(self.data_len) :
+	# 		stack.append([
+	# 			to_str(self.data[k][i]) for k in self.data
+	# 		])
+	# 	print(self.data_len)
+	# 	(self.replay_dir / "context.tsv").write_text('\n'.join('\t'.join(line) for line in stack))
 
 		
 if __name__ == '__main__' :

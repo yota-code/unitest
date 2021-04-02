@@ -76,5 +76,7 @@ pushd $model
 	_unitest_prepare_interface.py $model $template_name
 	
 	make clean all
+
+	./main.exe
 	
 popd
