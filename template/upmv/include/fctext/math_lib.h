@@ -56,4 +56,13 @@
 
 #endif
 
+#define m_m_bam_to_deg_U(bam, deg) ( deg = ( 90.0 * ( ((real)((uint32_t)(bam))) / 1073741824.0 ) ) )
+#define m_m_bam_to_deg_S(bam, deg) ( deg = ( 90.0 * ( ((real)((int32_t)(bam))) / 1073741824.0 ) ) )
+
+#define m_m_bam_to_rad_U(bam, rad) ( deg = ( M_PI_2 * ( ((real)((uint32_t)(bam))) / 1073741824.0 ) ) )
+#define m_m_bam_to_rad_S(bam, rad) ( deg = ( M_PI_2 * ( ((real)((int32_t)(bam))) / 1073741824.0 ) ) )
+
+#define m_m_deg_to_rad(deg, rad) ( rad = ( (M_PI_2 / 90.0) * deg ) ) 
+#define m_m_rad_to_deg(rad, deg) ( deg = ( (90.0 / M_PI_2) * rad  ) ) 
+
 #endif /* INCLUDE_fctext_math_lib_H */

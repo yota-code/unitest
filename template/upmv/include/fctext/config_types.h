@@ -7,17 +7,17 @@
 
 #ifdef SCADE_64BIT_INT
 	typedef int64_t _int;
-	typedef uint8_t bool;
 
 	#define SCADE_INT_MIN LLONG_MIN
 	#define SCADE_INT_MAX LLONG_MAX
 #else
 	typedef int32_t _int;
-	typedef uint8_t bool;
 
 	#define SCADE_INT_MIN INT_MIN
 	#define SCADE_INT_MAX INT_MAX
 #endif
+
+typedef uint8_t bool;
 
 #ifdef SCADE_64BIT_REAL
 	typedef double real;
