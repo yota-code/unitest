@@ -22,7 +22,7 @@ if __name__ == '__main__' :
 	scade_map = structarray.tools.scade_map_context(
 		node_dir / "mapping",
 		node_name,
-		[ "../include/scade", "../include/fctext" ]
+		[ "../include/scade", "../include/fctext", "../include" ]
 	)
 
 	# imple_map = {
