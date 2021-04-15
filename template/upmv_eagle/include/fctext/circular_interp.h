@@ -10,10 +10,9 @@
 #define circular_interp_SIZE (5)
 
 /*
-
 	i = 0 dernier échantillon inséré
-   i = 1 avant dernier échantillon
-   i = -1 plus vieil échantillon
+	i = 1 avant dernier échantillon
+	i = -1 plus vieil échantillon
 */
 
 #define circular_interp_SHIFT(self, i) (\

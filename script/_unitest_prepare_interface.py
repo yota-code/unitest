@@ -24,15 +24,6 @@ if __name__ == '__main__' :
 		node_name,
 		[ "../include/scade", "../include/fctext", "../include" ]
 	)
-
-	# imple_map = {
-	# 	'P8': "void *",
-	# 	'N4': "uint32_t",
-	# 	'Z4': "int32_t",
-	# 	'R4': "float",
-	# 	'R8': "double",
-	# 	'R2': "half",
-	# }
 	
 	template_dir = Path(os.environ['UNITEST_template_DIR']) / template_name
 	unitest.unroll_template_folder(template_dir, node_dir, {

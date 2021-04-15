@@ -17,7 +17,7 @@
 	#define SCADE_INT_MAX INT_MAX
 #endif
 
-typedef uint8_t bool;
+typedef int32_t bool;
 
 #ifdef SCADE_64BIT_REAL
 	typedef double real;
