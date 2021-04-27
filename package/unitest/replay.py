@@ -24,6 +24,7 @@ class UnitestReplay() :
 	
 	struct_map = {
 		"R4" : 'f',
+		"R8" : 'd',
 		"Z4" : 'i',
 		"B4" : 'i',
 		"P4" : 'P',
@@ -71,7 +72,10 @@ class UnitestReplay() :
 		value_lst = self.load_trajectory(self.replay_dir / "input.tsv")
 		stack = list()
 		for value in value_lst :
-			stack.append(self.input_fmt.pack(* value))
+			line = self.input_fmt.pack(* value)
+			if len(line) % 4 != 0 :
+				line = line + b'\x00' * ((((len(line) // 4) + 1) * 4) - len(line))
+			stack.append(line)
 		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))
 		
 	def load_trajectory(self, pth) :
@@ -130,6 +134,8 @@ class UnitestReplay() :
 
 		)
 		u.to_tsv(self.replay_dir / "context.tsv")
+
+		u.to_listing(self.replay_dir / "listing.tsv")
 
 		return
 		

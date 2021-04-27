@@ -94,13 +94,13 @@
 #define m_RAD_to_DEG ( ((double)(90.0)) / ((double)(M_PI_2)) )
 #define m_DEG_to_RAD ( ((double)(M_PI_2)) / ((double)(90.0)) )
 
-#define m_m_bam_to_deg_U(bam, deg) ( deg = ( ((real)((uint32_t)(bam))) * m_BAM_to_DEG ) )
-#define m_m_bam_to_deg_S(bam, deg) ( deg = ( ((real)((int32_t)(bam))) * m_BAM_to_DEG ) )
-#define m_m_deg_to_bam(deg, bam) ( bam = ( (int32_t)( ((double)(deg)) * m_DEG_to_BAM )) )
+#define m_m_bam_to_deg_U(bam, deg) ( deg = ( ((double)((uint32_t)(bam))) * m_BAM_to_DEG ) )
+#define m_m_bam_to_deg_S(bam, deg) ( deg = ( ((double)((int32_t)(bam))) * m_BAM_to_DEG ) )
+#define m_m_deg_to_bam(deg, bam) ( bam = (( (int64_t)( ((double)(deg)) * m_DEG_to_BAM )) & 0xFFFFFFFF ))
 
-#define m_m_bam_to_rad_U(bam, rad) ( rad = ( ((real)((uint32_t)(bam))) * m_BAM_to_RAD ) )
-#define m_m_bam_to_rad_S(bam, rad) ( rad = ( ((real)((int32_t)(bam))) * m_BAM_to_RAD ) )
-#define m_m_rad_to_bam(rad, bam) ( bam = ( (int32_t)( ((double)(rad)) * m_RAD_to_BAM )) )
+#define m_m_bam_to_rad_U(bam, rad) ( rad = ( ((double)((uint32_t)(bam))) * m_BAM_to_RAD ) )
+#define m_m_bam_to_rad_S(bam, rad) ( rad = ( ((double)((int32_t)(bam))) * m_BAM_to_RAD ) )
+#define m_m_rad_to_bam(rad, bam) ( bam = (( (int64_t)( ((double)(rad)) * m_RAD_to_BAM )) & 0xFFFFFFFF ))
 
 #define m_m_deg_to_rad(deg, rad) ( rad = ( deg * m_DEG_to_RAD ) ) 
 #define m_m_rad_to_deg(rad, deg) ( deg = ( rad * m_RAD_to_DEG ) )

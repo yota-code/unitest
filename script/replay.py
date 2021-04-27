@@ -17,6 +17,8 @@ struct_map = {
 	"pointer" : 'P',
 }
 
+DISABLED_CODE !!!
+
 unitest_dir = Path(os.environ["UNITEST_root_DIR"])
 
 def prepare_input(node_name, replay_no) :
@@ -25,8 +27,12 @@ def prepare_input(node_name, replay_no) :
 	m = get_struct(scade_map["input"])
 	value_lst = load_tsv(replay_dir / "input.tsv")
 	stack = list()
+	print("RAAAAH")
 	for value in value_lst :
-		stack.append(m.pack(* value))
+		line = m.pack(* value)
+		if len(line) % 4 != 0 :
+			line = line + b'\x00' * (((len(line) // 4) + 1) * 4) - len(line))
+		stack.append(line)
 	(replay_dir / "input.reb").write_bytes(b''.join(stack))
 	
 def load_binary(pth, info) :
