@@ -73,8 +73,9 @@ class UnitestReplay() :
 		stack = list()
 		for value in value_lst :
 			line = self.input_fmt.pack(* value)
-			if len(line) % 4 != 0 :
-				line = line + b'\x00' * ((((len(line) // 4) + 1) * 4) - len(line))
+			unit = 8
+			if len(line) % unit != 0 :
+				line = line + b'\x00' * ((((len(line) // unit) + 1) * unit) - len(line))
 			stack.append(line)
 		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))
 		

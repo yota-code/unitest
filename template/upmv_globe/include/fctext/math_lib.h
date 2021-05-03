@@ -17,10 +17,9 @@
 )
 
 #define m_m_bound_up(x, upper_bound, y) { y = m_BOUND_UP(x, upper_bound); }
-#define m_m_bound_low(x, lower_bound, y) { y = m_BOUND_LOW(x, upper_bound); }
+#define m_m_bound_low(x, lower_bound, y) { y = m_BOUND_LOW(x, lower_bound); }
 #define m_m_bound(x, lower_bound, upper_bound, y) { y = m_BOUND(x, lower_bound, upper_bound); }
 #define m_m_bound_S(x, symetric_bound, y) { y = m_BOUND(x, -symetric_bound, symetric_bound); }
-
 #define m_m_bound_Z_sym(x, symetric_bound, y) { y = m_BOUND(x, -symetric_bound, symetric_bound); }
 
 #define m_m_mod_N(a, m, n) { n = (((a % m) < 0) ? ((a % m) + m) : (a % m)); }
