@@ -5,11 +5,15 @@
 #include <inttypes.h>
 #include <limits.h>
 
+#define SCADE_32BIT_INT
+#define SCADE_64BIT_REAL
+
 #ifdef SCADE_64BIT_INT
 	typedef int64_t _int;
 
 	#define SCADE_INT_MIN LLONG_MIN
 	#define SCADE_INT_MAX LLONG_MAX
+
 #else
 	typedef int32_t _int;
 
@@ -20,8 +24,15 @@
 typedef int32_t bool;
 
 #ifdef SCADE_64BIT_REAL
+	#define SCADE_REAL_MIN DBL_MIN
+	#define SCADE_REAL_MAX DBL_MAX
+
 	typedef double real;
 #else
+
+	#define SCADE_REAL_MIN FLT_MIN
+	#define SCADE_REAL_MAX FLT_MAX
+
 	typedef float real;
 #endif
 

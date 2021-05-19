@@ -1,6 +1,3 @@
-<%
-import re
-%>\
 #include "unitest/context.h"
 
 _C_${node_name} unitest_context = {0};
