@@ -73,7 +73,7 @@ class UnitestReplay() :
 		stack = list()
 		for value in value_lst :
 			line = self.input_fmt.pack(* value)
-			unit = 8
+			unit = 4
 			if len(line) % unit != 0 :
 				line = line + b'\x00' * ((((len(line) // unit) + 1) * unit) - len(line))
 			stack.append(line)
