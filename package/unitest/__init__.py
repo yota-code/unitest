@@ -16,7 +16,7 @@ def unroll_template_file(src_dir, src_pth, dst_dir, arg_nam) :
 		if src_pth.suffix == ".mako" :
 			m = mako.template.Template(filename=str(src_pth), module_directory=str(unitest_dir / '.mako_template'))
 			dst_pth = (dst_dir / src_pth.relative_to(src_dir)).with_suffix('')
-			#print("MAKO :: {0}\n     -> {1}".format(src_pth, dst_pth))
+			# print("MAKO :: {0}\n     -> {1}".format(src_pth, dst_pth))
 			dst_pth.parent.mkdir(parents=True, exist_ok=True)
 			try :
 				dst_pth.write_text(m.render(** arg_nam))
@@ -24,7 +24,7 @@ def unroll_template_file(src_dir, src_pth, dst_dir, arg_nam) :
 				dst_pth.write_text(f'Failed rendering ! {e}\n------\n{traceback.format_exc()}')
 		else :
 			dst_pth = (dst_dir / src_pth.relative_to(src_dir))
-			#print("COPY :: {0}\n     -> {1}".format(src_pth, dst_pth))
+			# print("COPY :: {0}\n     -> {1}".format(src_pth, dst_pth))
 			dst_pth.parent.mkdir(parents=True, exist_ok=True)
 			dst_pth.write_bytes(src_pth.read_bytes())
 	else :
@@ -39,10 +39,10 @@ def unroll_template_folder(src_dir, dst_dir, arg_nam, src_root=None, dst_root=No
 	for pth in src_dir.iterdir() :
 		print("----", pth)
 		if pth.is_file() :
-			#print("FILE :: {0}".format(pth))
+			# print("FILE :: {0}".format(pth))
 			unroll_template_file(src_root, pth.relative_to(src_root), dst_root, arg_nam)
 		if pth.is_dir() :
-			#print("FOLDER :: {0}".format(pth))
+			# print("FOLDER :: {0}".format(pth))
 			unroll_template_folder(pth, dst_dir / pth.relative_to(src_root), arg_nam, src_root, dst_root)
 			
 import unitest.scadetype

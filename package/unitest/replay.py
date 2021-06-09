@@ -38,37 +38,62 @@ class UnitestReplay() :
 		self.node_dir = Path(os.environ["UNITEST_build_DIR"]).resolve() / node_name
 		self.replay_dir = self.node_dir / "replay" / replay_no
 		
-		self.load_io()
 		
 		self.data_len = None
 		self.data_pth = self.replay_dir / "context.reb"
-		
-	def load_io(self) :
-		self.input_lst = (self.node_dir / "mapping" / "input.tsv").load()
-		self.input_fmt = self.get_struct(self.input_lst)
-		print(f"P sizeof(unitest_input_T) = {self.input_fmt.size} x {len(self.input_lst)} -- {self.input_fmt.format}")
 
-		self.output_lst = (self.node_dir / "mapping" / "output.tsv").load()
-		self.output_fmt = self.get_struct(self.output_lst)
-		print(f"P sizeof(unitest_output_T) = {self.output_fmt.size} x {len(self.output_lst)} -- {self.output_fmt.format}")
+	def run(self) :
+		self.prep_input()
 
-	def get_struct(self, var_lst) :
-		fmt = ''.join(self.struct_map[ctype] for name, ctype in var_lst)
-		return struct.Struct(fmt)
+		self.run_node()
+
+		self.output_to_tsv()
+		self.context_to_tsv()
+
+	def prep_input(self) :
+		self.input_sta = structarray.StructArray(
+			self.node_dir / "mapping" / "input.tsv",
+		)
+
+		stack = list()
+		for value_lst in self.load_trajectory(self.replay_dir / "input.tsv") :
+			line = bytearray(self.input_sta.block_size)
+			for name, value in zip(self.input_sta.var_lst, value_lst) :
+				ctype, offset = self.input_sta.meta[name]
+				struct.pack_into(self.struct_map[ctype], line, offset, value)
+			stack.append(line)
+		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))
+
+
+
+
+		# self.input_lst = (self.node_dir / "mapping" / "input.tsv").load()[1:]
+		# self.input_fmt = struct.Struct(''.join(self.struct_map[ctype] for name, ctype in self.input_lst))
+
+		# print(f"P sizeof(unitest_input_T) = {self.input_fmt.size} x {len(self.input_lst)} -- {self.input_fmt.format}")
+
+		# self.prepare_trajectory()
+
+		# return
+
+		# self.output_lst = (self.node_dir / "mapping" / "output.tsv").load()
+		# self.output_fmt = self.get_struct(self.output_lst)
+		# print(f"P sizeof(unitest_output_T) = {self.output_fmt.size} x {len(self.output_lst)} -- {self.output_fmt.format}")
+
 		
-	def dump_output(self) :
-		stack = [
-			[c[0] for c in self.output_lst],
-		]
+	# def dump_output(self) :
+	# 	stack = [
+	# 		[c[0] for c in self.output_lst],
+	# 	]
 		
-		with (self.replay_dir / "output.reb").open('rb') as fid :
-			block = fid.read(self.output_fmt.size)
-			while len(block) == self.output_fmt.size :		
-				stack.append(self.output_fmt.unpack(block))
-				block = fid.read(self.output_fmt.size)
-		(self.replay_dir / "output.tsv").save(stack)
+	# 	with (self.replay_dir / "output.reb").open('rb') as fid :
+	# 		block = fid.read(self.output_fmt.size)
+	# 		while len(block) == self.output_fmt.size :		
+	# 			stack.append(self.output_fmt.unpack(block))
+	# 			block = fid.read(self.output_fmt.size)
+	# 	(self.replay_dir / "output.tsv").save(stack)
 	
-	def prepare_trajectory(self) :
+	def prepare_trajectory__disabled__(self) :
 		value_lst = self.load_trajectory(self.replay_dir / "input.tsv")
 		stack = list()
 		for value in value_lst :
@@ -127,18 +152,22 @@ class UnitestReplay() :
 	def run_node(self) :
 		subprocess.run('../../main.exe', cwd=self.replay_dir)
 		
-	def to_tsv(self) :
+	def output_to_tsv(self) :
+		u = structarray.StructArray(
+			self.node_dir / "mapping" / "output.tsv",
+			self.replay_dir / "output.reb",
 
+		)
+		u.to_tsv(self.replay_dir / "output.tsv")
+
+	def context_to_tsv(self) :
 		u = structarray.StructArray(
 			self.node_dir / "mapping" / "context.tsv",
 			self.replay_dir / "context.reb",
 
 		)
 		u.to_tsv(self.replay_dir / "context.tsv")
-
 		u.to_listing(self.replay_dir / "listing.tsv")
-
-		return
 		
 	# def _load_meta(self, meta_pth) :
 	# 	self.meta_pth = meta_pth

@@ -1,0 +1,3 @@
+[submodule "ext/structarray"]
+	path = ext/structarray
+	url = http://sma6299.eu.eurocopter.corp/gitea/ETGGC/structarray.git
