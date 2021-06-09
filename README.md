@@ -1,31 +1,50 @@
-# à l'ouverture de session
+# At session start
 
-se logguer sur sma6255
+Connexion to sma6255 station via
 
 	ssh sma6255
 
-lancer le shell zsh
+Start shell zsh via
 
 	zsh
 
-se déplacer dans le répertoire d'unitest
+Go to unitest folder via
 
 	cd /C/autools/source/$(whoami)/unitest
 
-charger l'environnement
+Modify the environment variable $PATH via
 
 	source export_path
 
-# à chaque nouvelle version du noeud
+# SCADE generation 
 
-supprimer les includes à la con dans le fichier unitest/kcg/<node>/scade_type.h
+Verify SCADE specific configuration « unitest ».
+Untick the option « Use CopyMem », avalaible in Project->Code Generator->Setting, tab Configuration
 
-installer la nouvelle instance 
+Generate node via SCADE
 
-	unitest_prepare <nom-du-neoud>
+Copy manually the SCADE generated sources into the folder /kcg/<NODE_NAME> with Windows
 
-enfin, lancer le sénario pour le noeud choisi
+# For each new node version
 
-	unitest_replay <node> <replay>
+Suppress the SCADE includes in the file unitest/kcg/<NODE_NAME>/scade_type.h
 
+Installation of the new instance via
 
+	unitest_prepare <NODE_NAME>
+
+Remark : the unitest environment is located in the folder build/<NODE_NAME>
+
+# How to start a simulation
+
+Create a test folder in build/<NODE_NAME>/replay
+
+	mkdir testXX
+
+From the folder build/<NODE_NAME>/replay/testXX, copy the file inputs.tsv (scenario) in the folder and modify it, (variable modification / addition of lines)
+
+Start the scenario for the node
+
+	unitest_replay <NODE_NAME> <testXX>
+
+The outputs are available in the file testXX/output.tsv
