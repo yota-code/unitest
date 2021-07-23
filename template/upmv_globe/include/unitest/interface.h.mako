@@ -22,5 +22,4 @@ extern unitest_${w}_T unitest_${w};
 int unitest_interface_${w}(_C_${node_name} * _C_) ;
 
 %endfor
-
 #endif /* INCLUDE_unitest_interface_H */

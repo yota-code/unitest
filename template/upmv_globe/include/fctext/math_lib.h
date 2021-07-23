@@ -10,10 +10,10 @@
 #define m_BOUND_UP(x, upper_bound) ( ((upper_bound < x) ? (upper_bound) : (x)) )
 #define m_BOUND_LOW(x, lower_bound) ( ((x < lower_bound) ? (lower_bound) : (x)) )
 
-#define m_BOUND(x, lower_bound, upper_bound) (\
-	(lower_bound <= upper_bound) ? (\
-		m_BOUND_LOW( m_BOUND_UP(x, upper_bound), lower_bound )\
-	) : ((lower_bound + upper_bound) / 2.0)\
+#define m_BOUND(x, lower_bound, upper_bound) ( \
+	(lower_bound <= upper_bound) ? ( \
+		m_BOUND_LOW( m_BOUND_UP(x, upper_bound), lower_bound ) \
+	) : ((lower_bound + upper_bound) / 2.0) \
 )
 
 #define m_m_bound_up(x, upper_bound, y) { y = m_BOUND_UP(x, upper_bound); }
@@ -22,13 +22,20 @@
 #define m_m_bound_S(x, symetric_bound, y) { y = m_BOUND(x, -symetric_bound, symetric_bound); }
 #define m_m_bound_Z_sym(x, symetric_bound, y) { y = m_BOUND(x, -symetric_bound, symetric_bound); }
 
-#define m_m_mod_N(a, m, n) { n = (((a % m) < 0) ? ((a % m) + m) : (a % m)); }
+#define m_MOD_N(a, m) (((a % m) < 0) ? ((a % m) + m) : (a % m))
+#define m_m_mod_N(a, m, n) { n = m_MOD_N(a, m); }
 
 #ifdef SCADE_64BIT_INT
 	#define m_m_abs_z(x, abs_x) { abs_x = labs(x); }
 #else
 	#define m_m_abs_z(x, abs_x) { abs_x = abs(x); }
 #endif
+
+#define m_m_bw_and(a, b, a_and_b) { a_and_b = ((a) & (b)); }
+#define m_m_bw_or(a, b, a_or_b) { a_or_b = ((a) | (b)); }
+#define m_m_bw_xor(a, b, a_xor_b) { a_xor_b = ((a) ^ (b)); }
+
+#define m_m_istrue(input, output) { output = ((input) != 0); }
 
 #ifdef SCADE_64BIT_REAL
 
@@ -55,6 +62,8 @@
 	#define m_m_floor(x, n) { n = (_int)( m_BOUND(floor(x), SCADE_INT_MIN, SCADE_INT_MAX) ); }
 	#define m_m_round(x, n) { n = (_int)( m_BOUND(round(x), SCADE_INT_MIN, SCADE_INT_MAX) ); }
 
+	#define m_m_mod_R(a, m, n) { n = (_int)( fmod(a, m) ); }
+
 #else
 
 	#define m_m_abs_r(x, abs_x) { abs_x = fabsf(x); }
@@ -80,28 +89,32 @@
 	#define m_m_floor(x, n) { n = (_int)( m_BOUND(floorf(x), SCADE_INT_MIN, SCADE_INT_MAX) ); }
 	#define m_m_round(x, n) { n = (_int)( m_BOUND(roundf(x), SCADE_INT_MIN, SCADE_INT_MAX) ); }
 
+	#define m_m_mod_R(a, m, n) { n = (_int)( fmodf(a, m) ); }
 #endif
 
-#define m_m_divide(a, b, r) ( r = ( (b == 0.0) ? ((a >= 0) ? (INFINITY) : (-INFINITY)) : (a / b) ))
+#define m_m_div_zero(a, b, r) ( r = ( (b == 0.0) ? ((a >= 0) ? (INFINITY) : (-INFINITY)) : (a / b) ))
 
-#define m_BAM_to_DEG ( ((double)(90.0)) / ((double)(1 << 30)) )
-#define m_DEG_to_BAM ( ((double)(1 << 30)) / ((double)(90.0)) )
+#define m_REAL_TO_BAM(x) ((_int)(((int64_t)((real)(x))) & 0xFFFFFFFF))
+#define m_BAM_TO_REAL(b) ((real)(b))
 
-#define m_BAM_to_RAD ( ((double)(M_PI_2)) / ((double)(1 << 30)) )
-#define m_RAD_to_BAM ( ((double)(1 << 30)) / ((double)(M_PI_2)) )
+#define m_BAM_TO_DEG ( ((double)(90.0)) / ((double)(1 << 30)) )
+#define m_DEG_TO_BAM ( ((double)(1 << 30)) / ((double)(90.0)) )
 
-#define m_RAD_to_DEG ( ((double)(90.0)) / ((double)(M_PI_2)) )
-#define m_DEG_to_RAD ( ((double)(M_PI_2)) / ((double)(90.0)) )
+#define m_BAM_TO_RAD ( ((double)(M_PI_2)) / ((double)(1 << 30)) )
+#define m_RAD_TO_BAM ( ((double)(1 << 30)) / ((double)(M_PI_2)) )
 
-#define m_m_bam_to_deg_U(bam, deg) ( deg = ( ((double)((uint32_t)(bam))) * m_BAM_to_DEG ) )
-#define m_m_bam_to_deg_S(bam, deg) ( deg = ( ((double)((int32_t)(bam))) * m_BAM_to_DEG ) )
-#define m_m_deg_to_bam(deg, bam) ( bam = (( (int64_t)( ((double)(deg)) * m_DEG_to_BAM )) & 0xFFFFFFFF ))
+#define m_RAD_TO_DEG ( ((double)(90.0)) / ((double)(M_PI_2)) )
+#define m_DEG_TO_RAD ( ((double)(M_PI_2)) / ((double)(90.0)) )
 
-#define m_m_bam_to_rad_U(bam, rad) ( rad = ( ((double)((uint32_t)(bam))) * m_BAM_to_RAD ) )
-#define m_m_bam_to_rad_S(bam, rad) ( rad = ( ((double)((int32_t)(bam))) * m_BAM_to_RAD ) )
-#define m_m_rad_to_bam(rad, bam) ( bam = (( (int64_t)( ((double)(rad)) * m_RAD_to_BAM )) & 0xFFFFFFFF ))
+#define m_m_bam_to_deg_U(bam, deg) { deg = m_BAM_TO_REAL((uint32_t)(bam)) * m_BAM_TO_DEG; }
+#define m_m_bam_to_deg_S(bam, deg) { deg = m_BAM_TO_REAL((int32_t)(bam)) * m_BAM_TO_DEG; }
+#define m_m_deg_to_bam(deg, bam) { bam = m_REAL_TO_BAM((deg) * m_DEG_TO_BAM); }
 
-#define m_m_deg_to_rad(deg, rad) ( rad = ( deg * m_DEG_to_RAD ) ) 
-#define m_m_rad_to_deg(rad, deg) ( deg = ( rad * m_RAD_to_DEG ) )
+#define m_m_bam_to_rad_U(bam, rad) { rad = m_BAM_TO_REAL((uint32_t)(bam)) * m_BAM_TO_RAD; }
+#define m_m_bam_to_rad_S(bam, rad) { rad = m_BAM_TO_REAL((int32_t)(bam)) * m_BAM_TO_RAD; }
+#define m_m_rad_to_bam(rad, bam) { bam = m_REAL_TO_BAM((rad) * m_RAD_TO_BAM); }
+
+#define m_m_deg_to_rad(deg, rad) ( rad = ( deg * m_DEG_TO_RAD ) ) 
+#define m_m_rad_to_deg(rad, deg) ( deg = ( rad * m_RAD_TO_DEG ) )
 
 #endif /* INCLUDE_fctext_math_lib_H */

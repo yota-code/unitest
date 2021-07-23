@@ -11,7 +11,7 @@ unitest_dir = Path(os.environ['UNITEST_build_DIR'])
 
 def unroll_template_file(src_dir, src_pth, dst_dir, arg_nam) :
 	#print("unroll_template_file({0}, {1}, {2}, {3})".format(src_dir, src_pth, dst_dir, arg_nam))
-	src_pth = (src_dir / src_pth).resolve()
+	src_pth = (src_dir / src_pth)
 	if src_pth.is_file() :
 		if src_pth.suffix == ".mako" :
 			m = mako.template.Template(filename=str(src_pth), module_directory=str(unitest_dir / '.mako_template'))
@@ -32,10 +32,12 @@ def unroll_template_file(src_dir, src_pth, dst_dir, arg_nam) :
 
 def unroll_template_folder(src_dir, dst_dir, arg_nam, src_root=None, dst_root=None) :
 	#print("unroll_template_folder({0}, {1}, {2}, {3})".format(src_dir, dst_dir, arg_nam, src_root))
+
 	if src_root is None :
 		src_root = src_dir
 	if dst_root is None :
 		dst_root = dst_dir
+
 	for pth in src_dir.iterdir() :
 		print("----", pth)
 		if pth.is_file() :

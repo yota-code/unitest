@@ -105,7 +105,7 @@ class UnitestReplay() :
 		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))
 		
 	def load_trajectory(self, pth) :
-		txt = pth.read_text().splitlines()
+		txt = pth.read_text().splitlines()[1:]
 		
 		line_lst = list()
 		for line in txt :

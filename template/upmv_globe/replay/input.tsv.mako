@@ -12,6 +12,6 @@ for n, line in enumerate(scade_map.walk(follow_pointers=True)) :
 		stack.append(f"{n:03d}_{line[-2].rstrip('*')}")
 		value.append(str(default_map[scade_map.ctype_map[line[-1]][0]]))
 %>\
-#${'\t'.join(stack)}
+${'\t'.join(stack)}
 ${'\t'.join(value)}
 ${'\t'.join('.' for i in range(len(value)))}

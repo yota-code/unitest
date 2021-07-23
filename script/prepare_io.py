@@ -8,6 +8,8 @@ import re
 
 from pathlib import Path
 
+DISABLED !!!
+
 class ScadeType() :
 	rec_struct = re.compile("""typedef\s+struct\s*\\{(?P<content>.*?)\\}\s*(?P<name>[a-zA-Z_][a-zA-Z0-9_]*)\s*;""", re.MULTILINE | re.DOTALL)
 	rec_typedef = re.compile("""typedef\s+(?P<old>.*?)\s+(?P<new>[a-zA-Z_][a-zA-Z0-9_]*)\s*;""")

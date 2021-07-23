@@ -59,22 +59,13 @@ popd
 
 touch ./${model}/include/scade/${model}_extern.h
 
-# for fctext, files are copied over, exiting files are overwritten by the ones in the template
-cp -rL ${UNITEST_template_DIR}/${template_name}/include/fctext ./$model/include
-
 pushd $model
-
-	# to remove comments 
-	# 	gcc -fpreprocessed -dD -E -P "$file" > $rise_dir/src/scade/${file:t} 2> /dev/null
-
-	clean_scade.py src/scade include/scade
 
 	ln -snf ${model}_extern.h include/scade/model_extern.h
 
-	#unitest_map_context $model
-	_unitest_prepare.py $model $template_name
-	#unitest_map_interface $model
-	# _unitest_prepare_interface.py $model $template_name
+	# unitest_map_context $model
+			
+	_unitest_prepare_interface.py $model $template_name
 	
 	make clean all
 
