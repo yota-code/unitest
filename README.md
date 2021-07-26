@@ -31,7 +31,7 @@ Suppress the SCADE includes in the file unitest/kcg/<NODE_NAME>/scade_type.h
 
 Installation of the new instance via
 
-	unitest_prepare <NODE_NAME>
+	unitest_prepare <NODE_NAME> <template_name>
 
 Remark : the unitest environment is located in the folder build/<NODE_NAME>
 
