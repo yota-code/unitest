@@ -70,6 +70,7 @@ pushd $model
 	clean_scade.py src/scade include/scade
 
 	ln -snf ${model}_extern.h include/scade/model_extern.h
+	touch include/scade/${model}_main.h
 
 	#unitest_map_context $model
 	_unitest_prepare.py $model $template_name

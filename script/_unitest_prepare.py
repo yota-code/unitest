@@ -33,6 +33,7 @@ int main(int argc, char * argv[]) {{
 
 	inttype_info(unsigned int);
 	inttype_info(bool);
+	inttype_info(char);
 	inttype_info(signed char);
 	inttype_info(unsigned char);
 	inttype_info(short);
