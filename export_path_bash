@@ -6,16 +6,11 @@ function push_pythonpath() {
 	export PYTHONPATH=${pth}/package:$PYTHONPATH
 }
 
-export UNITEST_root_DIR=${0:a:h}
+export UNITEST_root_DIR=$(dirname ${BASHSOURCE[0]})
 export UNITEST_template_DIR=$UNITEST_root_DIR/template
 export UNITEST_build_DIR=$UNITEST_root_DIR/build
 export UNITEST_kcg_DIR=$UNITEST_root_DIR/kcg
 
 push_pythonpath ${UNITEST_root_DIR}
 
-typeset -T PYTHONPATH pythonpath
-
-typeset -U pythonpath
-typeset -U path
-
-rehash
+hash -r
