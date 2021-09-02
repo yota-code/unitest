@@ -95,7 +95,7 @@ def map_context(node_name, include_lst) :
 
 	u = structarray.StructInfo(cwd / 'structarray_context.exe')
 	u.parse('context')
-	u.save(cwd, 'context')
+	u.save(cwd / 'context')
 
 	return u
 
@@ -119,7 +119,7 @@ def map_interface(node_name, include_lst) :
 	for k in ["input", "output"] :
 		u = structarray.StructInfo(cwd / 'structarray_interface.exe')
 		u.parse(k)
-		u.save(cwd, k)
+		u.save(cwd / f"{k}.json")
 
 def unroll_tempate(node_name, template_name, context_info) :
 
