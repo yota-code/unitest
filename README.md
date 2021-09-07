@@ -1,3 +1,24 @@
+# First use of unitest
+
+Verify your .zshrc and .profile after connexion to sma6255
+
+	ssh sma6255
+	zsh
+	cd
+	ls -la .profile
+	ls -la .zshrc
+
+Results should be .profile -> /C/autools/zprofile/profile and .zshrc -> /C/autools/zprofile/zshrc
+if not, create the following links:
+
+	ln -snf /C/autools/zprofile/profile .profile 
+	ln -snf /C/autools/zprofile/.zshrc .zshrc 
+
+Create if needed your personal folder on \\nahar\fdat1038\source\ with aXXXXX (or echo $(whoami))
+
+Install unitest in your folder on \\nahar\fdat1038\source\aXXXX via git clone
+URL http://sma6299.eu.eurocopter.corp/gitea/ETGGC/unitest
+
 # At session start
 
 Connexion to sma6255 station via
@@ -23,7 +44,7 @@ Untick the option « Use CopyMem », avalaible in Project->Code Generator->Setti
 
 Generate node via SCADE
 
-Copy manually the SCADE generated sources into the folder /kcg/<NODE_NAME> with Windows
+Copy manually the SCADE generated sources into the folder /kcg/<NODE_NAME> with Windows (create it if needed)
 
 # For each new node version
 
@@ -32,6 +53,8 @@ Suppress the SCADE includes in the file unitest/kcg/<NODE_NAME>/scade_type.h
 Installation of the new instance via
 
 	unitest_prepare <NODE_NAME> <template_name>
+
+With as template helionix / scade_v3 / scade_mini
 
 Remark : the unitest environment is located in the folder build/<NODE_NAME>
 
