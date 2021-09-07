@@ -11,13 +11,22 @@ Verify your .zshrc and .profile after connexion to sma6255
 Results should be .profile -> /C/autools/zprofile/profile and .zshrc -> /C/autools/zprofile/zshrc
 if not, create the following links:
 
-	ln -snf /C/autools/zprofile/.profile .profile 
-	ln -snf /C/autools/zprofile/.zshrc .zshrc 
+	ln -snf /C/autools/zprofile/profile .profile 
+	ln -snf /C/autools/zprofile/zshrc .zshrc 
 
 Create if needed your personal folder on \\nahar\fdat1038\source\ with aXXXXX (or echo $(whoami))
 
+	cd /C/autools/source/
+	mkdir $(whoami)
+
 Install unitest in your folder on \\nahar\fdat1038\source\aXXXX via git clone
 URL http://sma6299.eu.eurocopter.corp/gitea/ETGGC/unitest
+* either use it on unix via
+
+	cd /C/autools/source/$(whoami)/
+	git clone http://sma6299.eu.eurocopter.corp/gitea/ETGGC/unitest
+	
+* either on windows via TortoiseGit using the option Git / Global / AutoCrLf at false and the Git Clone http://sma6299.eu.eurocopter.corp/gitea/ETGGC/unitest
 
 # At session start
 
@@ -52,9 +61,9 @@ Suppress the SCADE includes in the file unitest/kcg/<NODE_NAME>/scade_type.h
 
 Installation of the new instance via
 
-	unitest_prepare <NODE_NAME> <template_name>
+	unitest_prepare <NODE_NAME> <template>
 
-With as template helionix / scade_v3 / scade_mini
+With as template scade_v3 / scade_mini
 
 Remark : the unitest environment is located in the folder build/<NODE_NAME>
 
