@@ -11,7 +11,7 @@ Verify your .zshrc and .profile after connexion to sma6255
 Results should be .profile -> /C/autools/zprofile/profile and .zshrc -> /C/autools/zprofile/zshrc
 if not, create the following links:
 
-	ln -snf /C/autools/zprofile/profile .profile 
+	ln -snf /C/autools/zprofile/.profile .profile 
 	ln -snf /C/autools/zprofile/.zshrc .zshrc 
 
 Create if needed your personal folder on \\nahar\fdat1038\source\ with aXXXXX (or echo $(whoami))
