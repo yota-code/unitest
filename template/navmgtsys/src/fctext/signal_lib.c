@@ -1,5 +1,8 @@
 
-#include "fctext/config_types.h"
+#ifndef _INCLUDE_SCADE_TYPES
+	#include "scade_types.h"
+#endif
+
 #include "scade/model_extern.h"
 
 #include "fctext/math_lib.h"
@@ -9,9 +12,9 @@
 
 #define period_ms ((real)(250))
 
-const real T_CYCLE = period_ms / 1000.0 ;
-const real F_CYCLE = 1000.0 / period_ms ;
-
+real T_CYCLE = period_ms / 1000.0 ;
+real F_CYCLE = 1000.0 / period_ms ;
+/*
 int s_tbX_average(real * cmd_lst, real * dur_lst, real jm, size_t n, real * average) {
 
 	real t = 0.0;
@@ -92,3 +95,4 @@ real s_tbX_duration(real * cmd_lst, real * dur_lst, size_t n) {
 	return total_duration;
 
 }
+*/

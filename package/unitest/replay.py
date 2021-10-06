@@ -38,7 +38,6 @@ class UnitestReplay() :
 		self.node_dir = Path(os.environ["UNITEST_build_DIR"]).resolve() / node_name
 		self.replay_dir = self.node_dir / "replay" / replay_no
 		
-		
 		self.data_len = None
 		self.data_pth = self.replay_dir / "context.reb"
 
@@ -63,9 +62,6 @@ class UnitestReplay() :
 				struct.pack_into(self.struct_map[ctype], line, offset, value)
 			stack.append(line)
 		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))
-
-
-
 
 		# self.input_lst = (self.node_dir / "mapping" / "input.tsv").load()[1:]
 		# self.input_fmt = struct.Struct(''.join(self.struct_map[ctype] for name, ctype in self.input_lst))
@@ -118,7 +114,7 @@ class UnitestReplay() :
 			else :
 				line_lst.append(line)
 		
-		(self.replay_dir / "input.first_pass.tsv").write_text('\n'.join(line_lst))
+		# (self.replay_dir / "input.first_pass.tsv").write_text('\n'.join(line_lst))
 			
 		value_lst = list()
 		for line in line_lst :
@@ -145,7 +141,8 @@ class UnitestReplay() :
 			if line_lst :
 				value_lst.append(line_lst)
 			
-		(self.replay_dir / "input.second_pass.tsv").write_text('\n'.join(str(i) for i in value_lst))
+		#print(value_lst)
+		(self.replay_dir / "../input.tsv").save(value_lst)
 			
 		return value_lst
 		
@@ -156,18 +153,16 @@ class UnitestReplay() :
 		u = structarray.StructArray(
 			self.node_dir / "mapping" / "output.tsv",
 			self.replay_dir / "output.reb",
-
 		)
-		u.to_tsv(self.replay_dir / "output.tsv")
+		u.to_tsv(self.replay_dir / "../output.tsv")
 
 	def context_to_tsv(self) :
 		u = structarray.StructArray(
 			self.node_dir / "mapping" / "context.tsv",
 			self.replay_dir / "context.reb",
-
 		)
-		u.to_tsv(self.replay_dir / "context.tsv")
-		u.to_listing(self.replay_dir / "listing.tsv")
+		u.to_tsv(self.replay_dir / "../context.tsv")
+		u.to_listing(self.replay_dir / "../listing.tsv")
 		
 	# def _load_meta(self, meta_pth) :
 	# 	self.meta_pth = meta_pth

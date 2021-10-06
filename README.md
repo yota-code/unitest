@@ -16,6 +16,8 @@ Modify the environment variable $PATH via
 
 	source export_path
 
+sudo -H pip3 install mako, numpy
+
 # SCADE generation 
 
 Verify SCADE specific configuration « unitest ».

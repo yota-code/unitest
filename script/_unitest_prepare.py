@@ -15,7 +15,7 @@ scade_context_template = '''#include <stdlib.h>
 
 #include <string.h>
 
-#define inttype_info(t) printf("\\t\\"%s\\" : \\"%s%d\\",\\n", #t, ( ( (((t)(0)) - 1) > 0) ? ("N") : ("Z")), sizeof(t))
+#define inttype_info(t) printf("\\t\\"%s\\" : \\"%s%d\\",\\n", #t, ( ( ( ((t)(0)) - 1 ) > 0 ) ? ("N") : ("Z")), sizeof(t) )
 #define realtype_info(t) printf("\\t\\"%s\\" : \\"%s%d\\",\\n", #t, "R", sizeof(t))
 #define pointertype_info(t) printf("\\t\\"%s\\" : \\"%s%d\\",\\n", #t, "P", sizeof(t))
 
@@ -31,13 +31,14 @@ int main(int argc, char * argv[]) {{
 
 	pointertype_info(void*);
 
-	inttype_info(unsigned int);
 	inttype_info(bool);
+	inttype_info(_Bool);
 	inttype_info(char);
 	inttype_info(signed char);
 	inttype_info(unsigned char);
 	inttype_info(short);
 	inttype_info(int);
+	inttype_info(unsigned int);
 	inttype_info(long);
 	inttype_info(long long);
 	inttype_info(unsigned long);
@@ -137,6 +138,21 @@ def unroll_tempate(node_name, template_name, context_info) :
 		'node_name' : node_name
 	})
 
+def tweak_scade_types(node_name, template_name) :
+
+	template_dir = Path(os.environ['UNITEST_template_DIR']) / template_name
+
+	node_dir = Path(os.environ['UNITEST_build_DIR']) / node_name
+
+	scade_types_pth = node_dir / "include" / "scade" / "scade_types.h"
+	scade_tweak_pth = template_dir / "scade_tweak.tsv"
+
+	if scade_tweak_pth.is_file() :
+
+		txt = scade_types_pth.load()
+		for old_str, new_str in scade_tweak_pth.load() :
+			txt = txt.replace(old_str, new_str)
+		scade_types_pth.write_text(txt)
 
 if __name__ == '__main__' :
 
@@ -149,6 +165,7 @@ if __name__ == '__main__' :
 	node_name = sys.argv[1]
 	template_name = sys.argv[2]
 
+	tweak_scade_types(node_name, template_name)
 	context_info = map_context(node_name, include_lst)
 	unroll_tempate(node_name, template_name, context_info)
 	map_interface(node_name, include_lst)

@@ -6,7 +6,6 @@ import sys
 from cc_pathlib import Path
 
 import cc_pathlib
-print(cc_pathlib.__file__)
 
 import unitest.replay
 
