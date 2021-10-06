@@ -3,4 +3,4 @@
 	url = http://sma6299.eu.eurocopter.corp/gitea/ETGGC/structarray.git
 [submodule "ext/cc_pathlib"]
 	path = ext/cc_pathlib
-	url = https://github.com/yota-code/cc_pathlib.git
+	url = https://sma6299.eu.eurocopter.corp/gitea/ETGGC/cc_pathlib.git
