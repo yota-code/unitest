@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import subprocess
 import sys
 
@@ -154,6 +155,27 @@ def tweak_scade_types(node_name, template_name) :
 			txt = txt.replace(old_str, new_str)
 		scade_types_pth.write_text(txt)
 
+typedef_rec = re.compile("""typedef\s+(?P<old>.*?)\s+(?P<new>[a-zA-Z_][a-zA-Z0-9_]*)\s*;""")
+
+def make_scade_typedef(node_name) :
+
+	node_dir = Path(os.environ['UNITEST_build_DIR']) / node_name
+
+	txt = (node_dir / 'include' / 'scade' / 'scade_types.h').read_text()
+
+	stack = [
+		'#ifndef INCLUDE_fctext_scade_typedef_H',
+		'#define INCLUDE_fctext_scade_typedef_H',
+		''
+	]
+
+	for res in typedef_rec.finditer(txt) :
+		stack.append(f"#define SCADE_TYPEDEF_{res.group('new')}")
+	stack.append('')
+	stack.append('#endif /* INCLUDE_fctext_scade_typedef_H */')
+
+	(node_dir / 'include' / 'fctext' / 'scade_typedef.h').write_text('\n'.join(stack))
+
 if __name__ == '__main__' :
 
 	include_lst = [
@@ -162,10 +184,14 @@ if __name__ == '__main__' :
 		'../include/scade'
 	]
 
+
 	node_name = sys.argv[1]
 	template_name = sys.argv[2]
 
 	tweak_scade_types(node_name, template_name)
+	make_scade_typedef(node_name)
+	
 	context_info = map_context(node_name, include_lst)
 	unroll_tempate(node_name, template_name, context_info)
+
 	map_interface(node_name, include_lst)
