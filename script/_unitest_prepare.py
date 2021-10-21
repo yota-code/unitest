@@ -154,9 +154,15 @@ def tweak_scade_types(node_name, template_name) :
 	if scade_tweak_pth.is_file() :
 
 		txt = scade_types_pth.load()
-		for old_str, new_str in scade_tweak_pth.load() :
-			txt = txt.replace(old_str, new_str)
+		for line in scade_tweak_pth.load() :
+			if len(line) == 1 :
+				txt = txt.replace(f'#include "{line[0]}"', '')
+				print(f'DEL #include "{line[0]}"')
+			elif len(line) == 2 :
+				txt = txt.replace(f'#include "{line[0]}"', f'#include "{line[1]}"')
+				print(f'UPD #include "{line[0]}" -> #include "{line[1]}"')
 		scade_types_pth.write_text(txt)
+
 
 typedef_rec = re.compile("""typedef\s+(?P<old>.*?)\s+(?P<new>[a-zA-Z_][a-zA-Z0-9_]*)\s*;""")
 
