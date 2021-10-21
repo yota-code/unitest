@@ -28,7 +28,8 @@ class UnitestReplay() :
 		"Z4" : 'i',
 		"B4" : 'i',
 		"P4" : 'P',
-		"Z1" : 'b'
+		"Z1" : 'b',
+		"N8" : 'L',
 	}
 	
 	def __init__(self, node_name, replay_no) :

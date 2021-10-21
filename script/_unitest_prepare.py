@@ -14,6 +14,8 @@ import unitest
 scade_context_template = '''#include <stdlib.h>
 #include <stdio.h>
 
+#include <stdint.h>
+
 #include <string.h>
 
 #define inttype_info(t) printf("\\t\\"%s\\" : \\"%s%d\\",\\n", #t, ( ( ( ((t)(0)) - 1 ) > 0 ) ? ("N") : ("Z")), sizeof(t) )
@@ -43,7 +45,8 @@ int main(int argc, char * argv[]) {{
 	inttype_info(long);
 	inttype_info(long long);
 	inttype_info(unsigned long);
-
+	inttype_info(unsigned long int);
+	inttype_info(uint64_t);
 	realtype_info(float);
 	realtype_info(double);
 
