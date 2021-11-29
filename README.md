@@ -63,7 +63,7 @@ Installation of the new instance via
 
 	unitest_prepare <NODE_NAME> <template>
 
-With as template scade_v3 / scade_mini
+With as template scade_v3 / scade_mini / helionix
 
 Remark : the unitest environment is located in the folder build/<NODE_NAME>
 
@@ -80,3 +80,39 @@ Start the scenario for the node
 	unitest_replay <NODE_NAME> <testXX>
 
 The outputs are available in the file testXX/output.tsv
+
+# Errors
+
+If your models do not use a table1, the type should be manually added in your unitest/kcg/<NODE_NAME>/scade_type.h
+typedef struct {
+real _F0;
+real _F1;
+real _F2;
+real _F3;
+real _F4;
+real _F5;
+real _F6;
+real _F7;
+real _F8;
+real _F9;
+real _F10;
+real _F11;
+real _F12;
+real _F13;
+real _F14;
+real _F15;
+real _F16;
+real _F17;
+real _F18;
+real _F19;
+} _T<number_type+1>_<NODE_NAME>;
+
+typedef _T<number_type+1>_<NODE_NAME> intpol_vec;
+
+typedef struct {
+intpol_vec Point_Arg;
+intpol_vec Point_Val;
+_int Bound;
+} _T<number_type+2>_<NODE_NAME>;
+
+typedef _T<number_type+2>_<NODE_NAME> table1;
