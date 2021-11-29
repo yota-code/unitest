@@ -15,7 +15,7 @@
 
 #ifndef m_SAOsind
 // extern void SAOsind(real The_Input, real * The_Output);
-#define m_SAOsind(The_Input,The_Output) { The_Output  = sinf( 180.0 * The_Input / M_PI ); }
+#define m_SAOsind(The_Input,The_Output) { The_Output  = sinf( The_Input * M_PI /180 ); }
 #endif /* m_SAOsind */
 
 #endif /* INCLUDE_fctext_macro_H */
