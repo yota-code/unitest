@@ -43,12 +43,26 @@ class UnitestReplay() :
 		self.data_pth = self.replay_dir / "context.reb"
 
 	def run(self) :
+		self.update_const()
 		self.prep_input()
 
 		self.run_node()
 
 		self.output_to_tsv()
 		self.context_to_tsv()
+		self.link_to_last()
+
+	def update_const(self) :
+		for src_pth in self.replay_dir.glob('*.c') :
+			dst_pth = self.node_dir / "src" / "fctext" / src_pth.name
+			print(src_pth, dst_pth)
+			dst_pth.write_bytes( src_pth.read_bytes() )
+		for src_pth in self.replay_dir.glob('*.h') :
+			dst_pth = self.node_dir / "include" / "fctext" / src_pth.name
+			print(src_pth, dst_pth)
+			dst_pth.write_bytes( src_pth.read_bytes() )
+
+		self.node_dir.run("make")
 
 	def prep_input(self) :
 		self.input_sta = structarray.StructArray(
@@ -143,7 +157,7 @@ class UnitestReplay() :
 				value_lst.append(line_lst)
 			
 		#print(value_lst)
-		(self.replay_dir / "../input.tsv").save(value_lst)
+		(self.replay_dir / "input_exp.tsv").save(value_lst)
 			
 		return value_lst
 		
@@ -155,15 +169,24 @@ class UnitestReplay() :
 			self.node_dir / "mapping" / "output.tsv",
 			self.replay_dir / "output.reb",
 		)
-		u.to_tsv(self.replay_dir / "../output.tsv")
+		u.to_tsv(self.replay_dir / "output.tsv")
 
 	def context_to_tsv(self) :
 		u = structarray.StructArray(
 			self.node_dir / "mapping" / "context.tsv",
 			self.replay_dir / "context.reb",
 		)
-		u.to_tsv(self.replay_dir / "../context.tsv")
-		u.to_listing(self.replay_dir / "../listing.tsv")
+		u.to_tsv(self.replay_dir / "context.tsv")
+		u.to_listing(self.replay_dir / "listing.tsv")
+
+	def link_to_last(self) :
+		last_dir = (self.replay_dir / '../__last__')
+		last_dir.make_dirs()
+		for src_pth in self.replay_dir :
+			dst_pth = last_dir / src_pth.name
+			if dst_pth.is_file() :
+				dst_pth.unlink()
+			dst_pth.hardlink_to(src_pth)
 		
 	# def _load_meta(self, meta_pth) :
 	# 	self.meta_pth = meta_pth

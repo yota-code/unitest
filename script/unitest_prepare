@@ -22,31 +22,32 @@ then
 	return 1
 fi
 
-if [[ -d ./$model/src/scade ]]
+if [[ -d ./${model}/src/scade ]]
 then
-	rm -rf ./$model/src/scade/*.c
+	rm -rf ./${model}/src/scade/*.c
 else
-	mkdir -p ./$model/src/scade
+	mkdir -p ./${model}/src/scade
 fi
+
 for file in ${UNITEST_kcg_DIR}/$model/*.c
 do
- 	gcc -fpreprocessed -dD -E -P "$file" > ./$model/src/scade/${file:t} 2> /dev/null
+ 	gcc -fpreprocessed -dD -E -P "$file" > ./${model}/src/scade/${file:t} 2> /dev/null
 done
-# cp ${UNITEST_kcg_DIR}/$model/*.c ./$model/src/scade
+# cp ${UNITEST_kcg_DIR}/$model/*.c ./${model}/src/scade
 
-if [[ -d ./$model/include/scade ]]
+if [[ -d ./${model}/include/scade ]]
 then
-	rm -rf ./$model/include/scade/*.h
+	rm -rf ./${model}/include/scade/*.h
 else
-	mkdir -p ./$model/include/scade
+	mkdir -p ./${model}/include/scade
 fi
 for file in ${UNITEST_kcg_DIR}/$model/*.h
 do
- 	gcc -fpreprocessed -dD -E -P "$file" > ./$model/include/scade/${file:t} 2> /dev/null
+ 	gcc -fpreprocessed -dD -E -P "$file" > ./${model}/include/scade/${file:t} 2> /dev/null
 done
-# cp ${UNITEST_kcg_DIR}/$model/*.h ./$model/include/scade
+# cp ${UNITEST_kcg_DIR}/$model/*.h ./${model}/include/scade
 
-pushd ./$model/include/scade
+pushd ./${model}/include/scade
 
 	if [[ -f ${model}_extern.h ]]
 	then
@@ -58,9 +59,11 @@ pushd ./$model/include/scade
 popd
 
 touch ./${model}/include/scade/${model}_extern.h
+echo "${template_name}" > template.log
 
 # for fctext, files are copied over, exiting files are overwritten by the ones in the template
-cp -rL ${UNITEST_template_DIR}/${template_name}/include/fctext ./$model/include
+cp -rL ${UNITEST_template_DIR}/${template_name}/include/fctext ./${model}/include
+cp -rL ${UNITEST_template_DIR}/${template_name}/src/fctext ./${model}/src
 
 pushd $model
 

@@ -39,9 +39,11 @@ def unroll_template_folder(src_dir, dst_dir, arg_nam, src_root=None, dst_root=No
 		dst_root = dst_dir
 
 	for pth in src_dir.iterdir() :
-		print("----", pth)
+		if pth.name.startswith('.') :
+			continue
 		if pth.is_file() :
 			# print("FILE :: {0}".format(pth))
+			print("---", pth)
 			unroll_template_file(src_root, pth.relative_to(src_root), dst_root, arg_nam)
 		if pth.is_dir() :
 			# print("FOLDER :: {0}".format(pth))

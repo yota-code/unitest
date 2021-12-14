@@ -17,13 +17,3 @@ pa.add_argument('replay_dir', metavar='REPLAY_DIR', help='folder holding the inp
 ap = pa.parse_args()
 
 u = unitest.replay.UnitestReplay(ap.node_name, ap.replay_dir).run()
-
-# u.run_node()
-
-# u.output_to_tsv()
-# u.context_to_tsv()
-
-# shortcut_pth = (u.replay_dir.parent / 'context.tsv')
-# if shortcut_pth.is_file() :
-# 	shortcut_pth.unlink()
-# shortcut_pth.hardlink_to(u.replay_dir / 'context.tsv')

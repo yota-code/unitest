@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 
+import cc_pathlib
 from cc_pathlib import Path
 
 import structarray
@@ -144,6 +145,8 @@ def unroll_tempate(node_name, template_name, context_info) :
 
 def tweak_scade_types(node_name, template_name) :
 
+	print(f">>> \x1b[35mtweak_scade_types\x1b[0m({node_name}, {template_name})")
+
 	template_dir = Path(os.environ['UNITEST_template_DIR']) / template_name
 
 	node_dir = Path(os.environ['UNITEST_build_DIR']) / node_name
@@ -151,18 +154,21 @@ def tweak_scade_types(node_name, template_name) :
 	scade_types_pth = node_dir / "include" / "scade" / "scade_types.h"
 	scade_tweak_pth = template_dir / "scade_tweak.tsv"
 
+	t_lst = scade_types_pth.load().splitlines()
+
 	if scade_tweak_pth.is_file() :
-
-		txt = scade_types_pth.load()
-		for line in scade_tweak_pth.load() :
-			if len(line) == 1 :
-				txt = txt.replace(f'#include "{line[0]}"', '')
-				print(f'DEL #include "{line[0]}"')
-			elif len(line) == 2 :
-				txt = txt.replace(f'#include "{line[0]}"', f'#include "{line[1]}"')
-				print(f'UPD #include "{line[0]}" -> #include "{line[1]}"')
-		scade_types_pth.write_text(txt)
-
+		for i, t in enumerate(t_lst) :
+			for line in scade_tweak_pth.load() :
+				# print(repr(t), repr(line[0]), line[0] == t)
+				if line[0] == t :
+					if len(line) == 1 :
+						t_lst[i] = f'/* DEL {t} */'
+						print(f'DEL {line[0]}')
+					elif len(line) == 2 :
+						t_lst[i] = f'{line[1]} /* UPD {t} */'
+						print(f'UPD {line[0]} -> {line[1]}')
+		
+	scade_types_pth.write_text('\n'.join(t_lst))
 
 typedef_rec = re.compile("""typedef\s+(?P<old>.*?)\s+(?P<new>[a-zA-Z_][a-zA-Z0-9_]*)\s*;""")
 
@@ -192,7 +198,6 @@ if __name__ == '__main__' :
 		'../include/fctext',
 		'../include/scade'
 	]
-
 
 	node_name = sys.argv[1]
 	template_name = sys.argv[2]
