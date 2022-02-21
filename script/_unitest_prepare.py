@@ -47,6 +47,7 @@ int main(int argc, char * argv[]) {{
 	inttype_info(long long);
 	inttype_info(unsigned long);
 	inttype_info(unsigned long int);
+	inttype_info(unsigned long long);
 	inttype_info(uint64_t);
 	realtype_info(float);
 	realtype_info(double);
@@ -80,53 +81,62 @@ int main(int argc, char * argv[]) {
 }
 '''
 
-def map_context(node_name, include_lst) :
 
-	cwd = Path(os.environ['UNITEST_build_DIR']) / node_name / "mapping"
-	cwd.make_dirs()
+class Mapping() :
+	def __init__(self, node_name, template_name, include_lst, is_32bit=False) :
+		self.node_name = node_name
+		self.template_name = template_name
+		self.include_lst = include_lst
 
-	(cwd / 'structarray_context.c').write_text(scade_context_template.format(node_name=node_name))
+		self.is_32bit = is_32bit
 
-	cmd = (
-		["gcc", "-save-temps", "-std=c99", "-g"] +
-		[f"-I{str(include_dir)}" for include_dir in include_lst] +
-		["structarray_context.c", "-o", "structarray_context.exe"]
-	)
-	ret = cwd.run(* cmd)
-	if ret.returncode != 0 :
-		raise ValueError("gcc couldn't compile properly")
+		self.gcc_lst = ["gcc", "-save-temps", "-std=c99", "-g"]
+		if is_32bit :
+			self.gcc_lst.append("-m32")
+		self.gcc_lst += [f"-I{str(include_dir)}" for include_dir in include_lst]
 
-	ret = cwd.run("./structarray_context.exe")
-	txt = ret.stdout.decode(sys.stdout.encoding)
-	(cwd / "structarray_ctype.json").write_text(txt.replace(',\n}', '\n}'))
+		self.mapping_dir = Path(os.environ['UNITEST_build_DIR']) / node_name / ("mapping" + ("_32" if is_32bit else ""))
 
-	u = structarray.StructInfo(cwd / 'structarray_context.exe')
-	u.parse('context')
-	u.save(cwd / 'context')
+	def map_context(self) :
+		cwd = self.mapping_dir
+		cwd.make_dirs()
 
-	return u
+		(cwd / 'structarray_context.c').write_text(scade_context_template.format(node_name=self.node_name))
 
-def map_interface(node_name, include_lst) :
-	cwd = Path(os.environ['UNITEST_build_DIR']) / node_name / "mapping"
-	cwd.make_dirs()
+		cmd = self.gcc_lst + ["structarray_context.c", "-o", "structarray_context.exe"]
 
-	(cwd / 'structarray_interface.c').write_text(scade_interface_template)
+		ret = cwd.run(* cmd)
+		if ret.returncode != 0 :
+			raise ValueError("gcc couldn't compile properly")
 
-	cmd = (
-		["gcc", "-save-temps", "-std=c99", "-g"] +
-		[f"-I{str(include_dir)}" for include_dir in include_lst] +
-		["structarray_interface.c", "-o", "structarray_interface.exe"]
-	)
-	ret = cwd.run(* cmd)
-	if ret.returncode != 0 :
-		raise ValueError("gcc couldn't compile properly")
+		ret = cwd.run("./structarray_context.exe")
+		txt = ret.stdout.decode(sys.stdout.encoding)
+		(cwd / "structarray_ctype.json").write_text(txt.replace(',\n}', '\n}'))
 
-	ret = cwd.run("./structarray_interface.exe")
+		u = structarray.StructInfo(cwd / 'structarray_context.exe')
+		u.parse('context')
+		u.save(cwd / 'context')
 
-	for k in ["input", "output"] :
-		u = structarray.StructInfo(cwd / 'structarray_interface.exe')
-		u.parse(k)
-		u.save(cwd / f"{k}.json")
+		return u
+
+	def map_interface(self) :
+		cwd = self.mapping_dir
+		cwd.make_dirs()
+
+		(cwd / 'structarray_interface.c').write_text(scade_interface_template)
+
+		cmd = self.gcc_lst + ["structarray_interface.c", "-o", "structarray_interface.exe"]
+
+		ret = cwd.run(* cmd)
+		if ret.returncode != 0 :
+			raise ValueError("gcc couldn't compile properly")
+
+		ret = cwd.run("./structarray_interface.exe")
+
+		for k in ["input", "output"] :
+			u = structarray.StructInfo(cwd / 'structarray_interface.exe')
+			u.parse(k)
+			u.save(cwd / f"{k}.json")
 
 def unroll_tempate(node_name, template_name, context_info) :
 
@@ -145,7 +155,7 @@ def unroll_tempate(node_name, template_name, context_info) :
 
 def tweak_scade_types(node_name, template_name) :
 
-	print(f">>> \x1b[35mtweak_scade_types\x1b[0m({node_name}, {template_name})")
+	print(f">>> PREPARE :: \x1b[35mtweak_scade_types\x1b[0m ({node_name}, {template_name})")
 
 	template_dir = Path(os.environ['UNITEST_template_DIR']) / template_name
 
@@ -204,8 +214,14 @@ if __name__ == '__main__' :
 
 	tweak_scade_types(node_name, template_name)
 	make_scade_typedef(node_name)
+
+	u = Mapping(node_name, template_name, include_lst)
+	context_info = u.map_context()
+
+	v = Mapping(node_name, template_name, include_lst, is_32bit=True)
+	v.map_context()
 	
-	context_info = map_context(node_name, include_lst)
 	unroll_tempate(node_name, template_name, context_info)
 
-	map_interface(node_name, include_lst)
+	u.map_interface()
+	v.map_interface()

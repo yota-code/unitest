@@ -1,6 +1,6 @@
 [submodule "ext/structarray"]
 	path = ext/structarray
-	url = http://sma6299.eu.eurocopter.corp/gitea/ETGGC/structarray.git
+	url = https://github.com/yota-code/structarray.git
 [submodule "ext/cc_pathlib"]
 	path = ext/cc_pathlib
-	url = https://sma6299.eu.eurocopter.corp/gitea/ETGGC/cc_pathlib.git
+	url = https://github.com/yota-code/cc_pathlib.git
