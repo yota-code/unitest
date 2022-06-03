@@ -183,7 +183,7 @@ def tweak_scade_types(node_name, template_name) :
 typedef_rec = re.compile("""typedef\s+(?P<old>.*?)\s+(?P<new>[a-zA-Z_][a-zA-Z0-9_]*)\s*;""")
 
 def make_scade_typedef(node_name) :
-
+	print(f">>> PREPARE :: \x1b[35mmake_scade_typedef\x1b[0m ({node_name})")
 	node_dir = Path(os.environ['UNITEST_build_DIR']) / node_name
 
 	txt = (node_dir / 'include' / 'scade' / 'scade_types.h').read_text()

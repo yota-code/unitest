@@ -66,6 +66,7 @@ cp -rL ${UNITEST_template_DIR}/${template_name}/include/fctext ./${model}/includ
 cp -rL ${UNITEST_template_DIR}/${template_name}/src/fctext ./${model}/src
 
 cp -rL ${UNITEST_template_DIR}/${template_name}/unitest_* ./${model}
+cp -rL ${UNITEST_template_DIR}/${template_name}/tuning_lst.tsv ./${model}
 
 pushd $model
 

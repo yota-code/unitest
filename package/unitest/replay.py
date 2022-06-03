@@ -74,7 +74,11 @@ class UnitestReplay() :
 			line = bytearray(self.input_sta.block_size)
 			for name, value in zip(self.input_sta.var_lst, value_lst) :
 				ctype, offset = self.input_sta.meta[name]
-				struct.pack_into(self.struct_map[ctype], line, offset, value)
+				try :
+					struct.pack_into(self.struct_map[ctype], line, offset, value)
+				except struct.error :
+					print(f"struct.pack_into({self.struct_map[ctype]}, <line>, {offset}, {name} = {value})")
+					raise
 			stack.append(line)
 		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))
 
