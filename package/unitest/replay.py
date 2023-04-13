@@ -74,10 +74,14 @@ class UnitestReplay() :
 			line = bytearray(self.input_sta.block_size)
 			for name, value in zip(self.input_sta.var_lst, value_lst) :
 				ctype, offset = self.input_sta.meta[name]
+				if ctype == 'Z4' :
+					p = ( value & 0xFFFFFFFF )
+					q = p if p < 0x80000000 else p - 0x100000000
+					value = q
 				try :
 					struct.pack_into(self.struct_map[ctype], line, offset, value)
 				except struct.error :
-					print(f"struct.pack_into({self.struct_map[ctype]}, <line>, {offset}, {name} = {value})")
+					print(f"struct.pack_into({ctype} / {self.struct_map[ctype]}, <line>, {offset}, {name} = {value})")
 					raise
 			stack.append(line)
 		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))
@@ -151,7 +155,10 @@ class UnitestReplay() :
 						i = i[1:]
 					else :
 						relative_mode = False
-					p = ast.literal_eval(i)
+					if i in ['nan', 'inf', '+inf', '-inf'] :
+						p = float(i)
+					else :
+						p = ast.literal_eval(i)
 					if relative_mode :
 						p += value_lst[-1][n]				
 				else :
@@ -180,11 +187,12 @@ class UnitestReplay() :
 			self.node_dir / "mapping" / "context.tsv",
 			self.replay_dir / "context.reb",
 		)
-		u.to_tsv(self.replay_dir / "context.tsv")
+		# u.to_tsv(self.replay_dir / "context.tsv")
 		u.to_listing(self.replay_dir / "listing.tsv")
 
 	def link_to_last(self) :
-		last_dir = (self.replay_dir / '../__last__')
+		last_dir = (self.replay_dir / '../__last__').resolve()
+
 		last_dir.make_dirs()
 		for src_pth in self.replay_dir :
 			dst_pth = last_dir / src_pth.name

@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+
+if [[ $# == 1 ]]
+then
+	scenario_dir=${1:a}
+
+	if [[ -f $scenario_dir/input.tsv ]]
+	then
+		echo "clear scenario $scenario_dir"
+		find $scenario_dir -name '*.reb' -printf '%p\n' -exec rm {} \;
+		find $scenario_dir -wholename '*.tsv' -not -name 'input.tsv' -printf '%p\n' -exec rm {} \;
+
+	fi
+else 
+	if [[ -d $UNITEST_build_DIR ]]
+	then
+		echo "clear all $UNITEST_build_DIR"
+		# pushd $UNITEST_build_DIR
+		# 	find . -name '*.reb' -exec rm {} \;
+		# 	find . -wholename '*replay/*.tsv' -not -name 'input.tsv' -exec rm {} \;
+		# popd
+	fi
+fi

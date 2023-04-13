@@ -224,4 +224,5 @@ if __name__ == '__main__' :
 	unroll_tempate(node_name, template_name, context_info)
 
 	u.map_interface()
-	v.map_interface()
+	#v.map_interface()
+

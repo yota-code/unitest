@@ -19,5 +19,3 @@ typeset -U pythonpath
 typeset -U path
 
 rehash
-
-export UPMV_route_PTH=/dk/vertex/Clement/data/demo.bin

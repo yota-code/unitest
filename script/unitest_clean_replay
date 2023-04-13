@@ -1,9 +1,0 @@
-#!/usr/bin/env zsh
-
-if [[ -d $UNITEST_build_DIR ]]
-then
-	pushd $UNITEST_build_DIR
-		find . -name '*.reb' -exec rm {} \;
-		find . -wholename '*replay/*.tsv' -not -name 'input.tsv' -exec rm {} \;
-	popd
-fi
