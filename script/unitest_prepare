@@ -80,6 +80,7 @@ pushd $model
 
 	if [[ -f unitest_prep_pre ]]
 	then
+		echo "--- unitest_prep_pre"
 		./unitest_prep_pre
 	fi
 
@@ -88,9 +89,9 @@ pushd $model
 
 	if [[ -f unitest_prep_post ]]
 	then
+		echo "--- unitest_prep_post"
 		./unitest_prep_post
 	fi
-
 
 	rm scade_tweak.tsv
 	rm **/fctext/*.mako
@@ -99,6 +100,7 @@ pushd $model
 	
 	if [[ -f unitest_make_pre ]]
 	then
+		echo "--- unitest_make_pre"
 		./unitest_make_pre
 	fi
 	
@@ -111,6 +113,7 @@ pushd $model
 	
 	if [[ -f unitest_make_post ]]
 	then
+		echo "--- unitest_make_post"
 		./unitest_make_post
 	fi
 

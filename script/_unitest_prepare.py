@@ -218,8 +218,8 @@ if __name__ == '__main__' :
 	u = Mapping(node_name, template_name, include_lst)
 	context_info = u.map_context()
 
-	v = Mapping(node_name, template_name, include_lst, is_32bit=True)
-	v.map_context()
+	# v = Mapping(node_name, template_name, include_lst, is_32bit=True)
+	# v.map_context()
 	
 	unroll_tempate(node_name, template_name, context_info)
 

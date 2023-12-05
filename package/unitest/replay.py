@@ -30,6 +30,7 @@ class UnitestReplay() :
 		"P4" : 'P',
 		"Z1" : 'b',
 		"N8" : 'L',
+		"N4" : 'I',
 	}
 	
 	def __init__(self, node_name, replay_no) :
@@ -187,8 +188,8 @@ class UnitestReplay() :
 			self.node_dir / "mapping" / "context.tsv",
 			self.replay_dir / "context.reb",
 		)
-		# u.to_tsv(self.replay_dir / "context.tsv")
-		u.to_listing(self.replay_dir / "listing.tsv")
+		u.to_tsv(self.replay_dir / "context.tsv")
+		u.to_listing(self.replay_dir / "listing.tsv", at=100)
 
 	def link_to_last(self) :
 		last_dir = (self.replay_dir / '../__last__').resolve()
