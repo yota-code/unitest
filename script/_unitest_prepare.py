@@ -33,8 +33,6 @@ int main(int argc, char * argv[]) {{
 
 	printf("{{\\n");
 
-	pointertype_info(void*);
-
 	inttype_info(bool);
 	inttype_info(_Bool);
 	inttype_info(char);
@@ -51,6 +49,8 @@ int main(int argc, char * argv[]) {{
 	inttype_info(uint64_t);
 	realtype_info(float);
 	realtype_info(double);
+
+	pointertype_info(void*);
 
 	printf("}}\\n");
 

@@ -27,7 +27,6 @@ def clean_folder(fld) :
 		clean_file(pth)
 	
 if __name__ == "__main__" :
-	
 	pth_lst = [Path(arg) for arg in sys.argv[1:]]
 	if not pth_lst :
 		pth_lst.append(Path('.'))
