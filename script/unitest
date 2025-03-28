@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+import os
+
+from cc_pathlib import Path
+
+def unitest_prepare(model) :
+	from unitest.prepare import UnitestPrepare
+
+	u = UnitestPrepare(node)
+
+if __name__ == '__main__' :
+	import sys
+
+	cmd = sys.argv[1]
+
+	if cmd == "prepare" :
+		node = Path(sys.argv[2]).name
+		unitest_prepare(node)
+	else :
+		raise ValueError
