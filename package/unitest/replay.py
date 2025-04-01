@@ -10,7 +10,7 @@ import numpy as np
 
 from cc_pathlib import Path
 
-import structarray
+import structarray.meta
 
 def to_str(s) :
 	if isinstance(s, int) :
@@ -31,13 +31,14 @@ class UnitestReplay() :
 		"Z1" : 'b',
 		"N8" : 'L',
 		"N4" : 'I',
+		"N1" : 'B',
 	}
 	
 	def __init__(self, node_name, replay_no) :
 		self.node_name = node_name
 		self.replay_no = replay_no
 		
-		self.node_dir = Path(os.environ["UNITEST_build_DIR"]).resolve() / node_name
+		self.node_dir = Path(os.environ["UNITEST_working_DIR"]).resolve() / "model" / node_name
 		self.replay_dir = self.node_dir / "replay" / replay_no
 		
 		self.data_len = None
@@ -49,8 +50,8 @@ class UnitestReplay() :
 
 		self.run_node()
 
-		self.output_to_tsv()
-		self.context_to_tsv()
+		# self.output_to_tsv()
+		# self.context_to_tsv()
 		self.link_to_last()
 
 	def update_const(self) :
@@ -66,23 +67,22 @@ class UnitestReplay() :
 		self.node_dir.run("make")
 
 	def prep_input(self) :
-		self.input_sta = structarray.StructArray(
-			self.node_dir / "mapping" / "input.tsv",
+		self.input_sta = structarray.meta.MetaReb().load(
+			self.node_dir / "mapping" / "input_map.tsv",
 		)
 
 		stack = list()
 		for value_lst in self.load_trajectory(self.replay_dir / "input.tsv") :
-			line = bytearray(self.input_sta.block_size)
-			for name, value in zip(self.input_sta.var_lst, value_lst) :
-				ctype, offset = self.input_sta.meta[name]
-				if ctype == 'Z4' :
+			line = bytearray(self.input_sta.sizeof)
+			for (name, mtype, offset), value in zip(self.input_sta, value_lst) :
+				if mtype == 'Z4' :
 					p = ( value & 0xFFFFFFFF )
 					q = p if p < 0x80000000 else p - 0x100000000
 					value = q
 				try :
-					struct.pack_into(self.struct_map[ctype], line, offset, value)
+					struct.pack_into(self.struct_map[mtype], line, offset, value)
 				except struct.error :
-					print(f"struct.pack_into({ctype} / {self.struct_map[ctype]}, <line>, {offset}, {name} = {value})")
+					print(f"struct.pack_into({mtype} / {self.struct_map[mtype]}, <line>, {offset}, {name} = {value})")
 					raise
 			stack.append(line)
 		(self.replay_dir / "input.reb").write_bytes(b''.join(stack))

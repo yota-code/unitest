@@ -22,9 +22,13 @@ class UnitestPrepare() :
 		self.copy_fctext()
 		self.prepare_typedef()
 
-		self.map_context()
+		self.meta = self.map_it("context", node=self.node)
 
-		self.unroll_unitest()
+		self.unroll_template()
+
+		self.map_it("input", node=self.node, meta=self.meta)
+
+		self.compile_project()
 
 	def gcc_call(self) :
 		g_lst = ["gcc", "-std=c11", "-g"]
@@ -45,6 +49,8 @@ class UnitestPrepare() :
 				ret = self.k_dir.run("gcc", "-fpreprocessed", "-dD", "-E", "-P", pth)
 				(dst / pth.name).write_text(ret.stdout.decode('utf8'))
 
+		(inc_dir / f"{self.node}_extern.h").touch()
+
 	def copy_fctext(self) :
 		src_dir = (self.m_dir / "src" / "fctext").make_dirs()
 		inc_dir = (self.m_dir / "include" / "fctext").make_dirs()
@@ -52,19 +58,16 @@ class UnitestPrepare() :
 		self.w_dir.run('rsync', "-av", "--checksum", "--delete", '--prune-empty-dirs', f"{self.t_dir}/src/fctext/", src_dir)
 		self.w_dir.run('rsync', "-av", "--checksum", "--delete", '--prune-empty-dirs', f"{self.t_dir}/include/fctext/", inc_dir)
 
-	def unroll_unitest(self) :
+	def unroll_template(self) :
 		from unitest.macco import unroll_folder
-
-		src_dir = (self.m_dir / "src" / "fctext").make_dirs()
-		inc_dir = (self.m_dir / "include" / "fctext").make_dirs()
 
 		arg = {
 			'meta' : self.meta,
 			'node' : self.node
 		}
 
-		unroll_folder(self.t_dir / "src"/ "unitest", self.m_dir / "src" / "unitest", arg)
-		unroll_folder(self.t_dir / "include"/ "unitest", self.m_dir / "include" / "unitest", arg)
+		unroll_folder(self.t_dir, self.m_dir, arg)
+		unroll_folder(self.t_dir, self.m_dir, arg)
 
 	def tweak_scade(self) :
 		print(f">>> PREPARE :: \x1b[35mtweak_scade_types\x1b[0m ()")
@@ -87,44 +90,50 @@ class UnitestPrepare() :
 			
 		scade_types_pth.write_text('\n'.join(t_lst))
 
-	def map_context(self) :
+	def compile_project(self) :
+		self.m_dir.run("make")
+
+	# def map_context(self) :
+	# 	from unitest.macco import unroll_file
+
+	# 	unroll_file(self.u_dir / "data", "node_context.c.mako", self.m_dir / "mapping", {"node": self.node})
+
+	# 	cmd = self.gcc_call() + ["node_context.c", "-o", "node_context.exe"]
+
+	# 	ret = (self.m_dir / "mapping").run(* cmd)
+	# 	if ret.returncode != 0 :
+	# 		raise ValueError("node_context.c couldn't compile properly")
+
+	# 	ret = (self.m_dir / "mapping").run("./node_context.exe")
+	# 	if ret.returncode != 0 :
+	# 		raise ValueError("error launching node_context.exe")
+
+	# 	from structarray.parself import ElfParser
+
+	# 	self.meta = ElfParser(self.m_dir / "mapping" / "node_context.exe")
+	# 	self.meta.run('context', self.m_dir / "mapping" / "context_map.tsv")
+
+	def map_it(self, n, ** arg) :
 		from unitest.macco import unroll_file
 
-		unroll_file(self.u_dir / "data", "node_context.c.mako", self.m_dir / "mapping", {"node": self.node})
+		unroll_file(self.u_dir / "data", f"node_{n}.c.mako", self.m_dir / "mapping", arg)
 
-		cmd = self.gcc_call() + ["node_context.c", "-o", "node_context.exe"]
+		cmd = self.gcc_call() + [f"node_{n}.c", "-o", f"node_{n}.exe"]
 
 		ret = (self.m_dir / "mapping").run(* cmd)
 		if ret.returncode != 0 :
-			raise ValueError("node_context.c couldn't compile properly")
+			raise ValueError(f"node_{n}.c couldn't compile properly")
 
-		ret = (self.m_dir / "mapping").run("./node_context.exe")
+		ret = (self.m_dir / "mapping").run(f"./node_{n}.exe")
 		if ret.returncode != 0 :
-			raise ValueError("error launching node_context.exe")
+			raise ValueError(f"error launching node_{n}.exe")
 
 		from structarray.parself import ElfParser
 
-		self.meta = ElfParser(self.m_dir / "mapping" / "node_context.exe")
-		self.meta.run('context', self.m_dir / "mapping" / "context_map.tsv")
+		u = ElfParser(self.m_dir / "mapping" / f"node_{n}.exe")
+		u.run(f"unitest_{n}", self.m_dir / "mapping" / f"{n}_map.tsv")
 
-	def map_interface(self) :
-		cwd = self.mapping_dir
-		cwd.make_dirs()
-
-		(cwd / 'structarray_interface.c').write_text(scade_interface_template)
-
-		cmd = self.gcc_lst + ["structarray_interface.c", "-o", "structarray_interface.exe"]
-
-		ret = cwd.run(* cmd)
-		if ret.returncode != 0 :
-			raise ValueError("gcc couldn't compile properly")
-
-		ret = cwd.run("./structarray_interface.exe")
-
-		for k in ["input", "output"] :
-			u = structarray.StructInfo(cwd / 'structarray_interface.exe')
-			u.parse(k)
-			u.save(cwd / f"{k}.json")
+		return u
 
 	def prepare_typedef(self) :
 		print(f">>> PREPARE :: \x1b[35mprepare_typedef\x1b[0m")

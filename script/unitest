@@ -1,21 +1,58 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 
 from cc_pathlib import Path
 
-def unitest_prepare(model) :
+def unitest_prepare(node) :
 	from unitest.prepare import UnitestPrepare
+	UnitestPrepare(node)
 
-	u = UnitestPrepare(node)
+
+def unitest_replay(node, scenario) :
+	from unitest.replay import UnitestReplay
+
+	UnitestReplay(node, scenario).run()
+
 
 if __name__ == '__main__' :
 	import sys
 
-	cmd = sys.argv[1]
+	def get_dir(s, r_dir, f_val=None) :
+		for n in [
+			r_dir / s,
+			r_dir / Path(s).resolve().name
+		] :
+			if n.is_dir() and (f_val is None or (n / f_val).is_file()) :
+				return n.name
+		else :
+			print(f"can't find a directory named {s} in kcg/")
+		print(f"can't find a directory named {s} in kcg/")
 
-	if cmd == "prepare" :
-		node = Path(sys.argv[2]).name
+	prog, verb, * args = sys.argv
+	
+	w_dir = Path(os.environ["UNITEST_working_DIR"]).resolve()
+	
+	if verb == "prepare" :
+		pa = argparse.ArgumentParser(description='prepare a model')
+		pa.add_argument('node', metavar='NODE', help='name of the node to be prepared')
+		ap = pa.parse_args(args)
+
+
+		node = get_dir(ap.node, w_dir / "kcg", "scade_types.h")
 		unitest_prepare(node)
+	elif verb == "replay" :
+		pa = argparse.ArgumentParser(description='replay a given scenario')
+
+		pa.add_argument('node', metavar='NODE', type=Path, help='name of the node to be replayed')
+		pa.add_argument('scenario', metavar='SCENARIO', type=Path, help='folder holding the input table')
+		ap = pa.parse_args(args)
+
+		node = get_dir(ap.node, w_dir / "model", "Makefile")
+		scenario = get_dir(ap.scenario, w_dir / "model" / node / "replay", "input.tsv")
+
+		unitest_replay(node, scenario)
+
 	else :
 		raise ValueError

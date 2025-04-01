@@ -30,7 +30,7 @@ def unroll_file(src_dir, src_pth, dst_dir, arg_nam) :
 		raise ValueError("not a valid .mako file:{0}".format(src_dir / src_pth))
 
 def unroll_folder(src_dir, dst_dir, arg_nam, src_root=None, dst_root=None) :
-	print("unroll_template_folder({0}, {1}, {2}, {3})".format(src_dir, dst_dir, arg_nam, src_root))
+	# print("unroll_template_folder({0}, {1}, {2}, {3})".format(src_dir, dst_dir, arg_nam, src_root))
 
 	if src_root is None :
 		src_root = src_dir
@@ -41,7 +41,7 @@ def unroll_folder(src_dir, dst_dir, arg_nam, src_root=None, dst_root=None) :
 		if pth.name.startswith('.') :
 			continue
 		if pth.is_file() :
-			# print("FILE :: {0}".format(pth))
+			print("FILE :: {0}".format(pth))
 			print("---", pth)
 			unroll_file(src_root, pth.relative_to(src_root), dst_root, arg_nam)
 		if pth.is_dir() :

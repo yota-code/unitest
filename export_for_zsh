@@ -15,6 +15,7 @@ then
 	echo "working in $UNITEST_working_DIR"
 else 
 	echo "please specify the wording dir"
+	return
 fi
 
 export UNITEST_template_DIR=$UNITEST_working_DIR/template
