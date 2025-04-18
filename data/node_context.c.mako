@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <inttypes.h>
 #include <stdint.h>
 
 #include <string.h>
 
-#include "scade_types.h"
+#include "scade/scade_types.h"
 
 #include "${node}.h"
 

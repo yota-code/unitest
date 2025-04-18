@@ -12,12 +12,14 @@ def unitest_prepare(node) :
 
 def unitest_replay(node, scenario) :
 	from unitest.replay import UnitestReplay
-
 	UnitestReplay(node, scenario).run()
 
 
 if __name__ == '__main__' :
 	import sys
+
+	u_dir = Path(os.environ["UNITEST_root_DIR"]).resolve()
+	w_dir = Path(os.environ["UNITEST_working_DIR"]).resolve()
 
 	def get_dir(s, r_dir, f_val=None) :
 		for n in [
@@ -26,21 +28,17 @@ if __name__ == '__main__' :
 		] :
 			if n.is_dir() and (f_val is None or (n / f_val).is_file()) :
 				return n.name
-		else :
-			print(f"can't find a directory named {s} in kcg/")
-		print(f"can't find a directory named {s} in kcg/")
+		print(f"can't find a directory named {s} in {u_dir / "kcg"}")
 
 	prog, verb, * args = sys.argv
 	
-	w_dir = Path(os.environ["UNITEST_working_DIR"]).resolve()
 	
 	if verb == "prepare" :
 		pa = argparse.ArgumentParser(description='prepare a model')
 		pa.add_argument('node', metavar='NODE', help='name of the node to be prepared')
 		ap = pa.parse_args(args)
 
-
-		node = get_dir(ap.node, w_dir / "kcg", "scade_types.h")
+		node = get_dir(ap.node, u_dir / "kcg", "scade_types.h")
 		unitest_prepare(node)
 	elif verb == "replay" :
 		pa = argparse.ArgumentParser(description='replay a given scenario')

@@ -1,4 +1,10 @@
 
+if [[ ! ${SHELL:t} == "zsh" ]]
+then
+	echo "zsh is not your shell! Try with: source \e[33mexport_for_bash\e[0m"
+	return
+fi
+
 function push_pythonpath() {
 	pth=$1:A
 	echo "+ ${pth}"
@@ -7,20 +13,13 @@ function push_pythonpath() {
 }
 
 export UNITEST_root_DIR=${0:a:h}
-
 export UNITEST_working_DIR=${1:a}
 
-if [[ -d $UNITEST_working_DIR ]]
-then
-	echo "working in $UNITEST_working_DIR"
-else 
+if [[ ! -d $UNITEST_working_DIR ]]
+then 
 	echo "please specify the wording dir"
 	return
 fi
-
-export UNITEST_template_DIR=$UNITEST_working_DIR/template
-export UNITEST_model_DIR=$UNITEST_working_DIR/model
-export UNITEST_kcg_DIR=$UNITEST_working_DIR/kcg
 
 push_pythonpath ${UNITEST_root_DIR}
 
@@ -30,3 +29,5 @@ typeset -U pythonpath
 typeset -U path
 
 rehash
+
+echo "working with \e[33m$UNITEST_working_DIR\e[0m"

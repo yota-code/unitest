@@ -41,8 +41,7 @@ def unroll_folder(src_dir, dst_dir, arg_nam, src_root=None, dst_root=None) :
 		if pth.name.startswith('.') :
 			continue
 		if pth.is_file() :
-			print("FILE :: {0}".format(pth))
-			print("---", pth)
+			print("FILE :: {0}".format(pth.relative_to(src_root)))
 			unroll_file(src_root, pth.relative_to(src_root), dst_root, arg_nam)
 		if pth.is_dir() :
 			# print("FOLDER :: {0}".format(pth))
