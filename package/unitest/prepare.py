@@ -43,7 +43,7 @@ class UnitestPrepare() :
 		self.deconst_extern()
 
 		# self.copy_fctext()
-		self.prepare_typedef()
+		self.prepare_typeguard()
 
 		self.map_context()
 		self.unroll_template()
@@ -207,7 +207,7 @@ class UnitestPrepare() :
 
 		return u
 
-	def prepare_typedef(self) :
+	def prepare_typeguard(self) :
 		print(f">>> PREPARE :: \x1b[35mprepare_typedef\x1b[0m")
 
 		typedef_rec = re.compile(r"typedef\s+(?P<old>.*?)\s+(?P<new>[a-zA-Z_][a-zA-Z0-9_]*)\s*;")
@@ -215,16 +215,16 @@ class UnitestPrepare() :
 		txt = (self.m_dir / 'include' / 'scade' / 'scade_types.h').read_text()
 
 		s_lst = [
-			'#ifndef INCLUDE_fctext_scade_typedef_H',
-			'#define INCLUDE_fctext_scade_typedef_H',
+			'#ifndef INCLUDE_fctext_scade_typeguard_H',
+			'#define INCLUDE_fctext_scade_typeguard_H',
 			''
 		]
 
 		for res in typedef_rec.finditer(txt) :
-			s_lst.append(f"#define SCADE_TYPEDEF_{res.group('new')}")
+			s_lst.append(f"#define SCADE_TYPEGUARD_{res.group('new')}")
 
 		s_lst.append('')
-		s_lst.append('#endif /* INCLUDE_fctext_scade_typedef_H */')
+		s_lst.append('#endif /* INCLUDE_fctext_scade_typeguard_H */')
 
-		(self.m_dir / 'include' / 'fctext' / 'scade_typedef.h').write_text('\n'.join(s_lst))
+		(self.m_dir / 'include' / 'fctext' / 'scade_typeguard.h').write_text('\n'.join(s_lst))
 	
