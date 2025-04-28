@@ -183,7 +183,10 @@ class UnitestPrepare() :
 
 		from structarray.parself2 import ElfParser
 
-		self.meta = ElfParser(self.m_dir / "mapping" / f"{fnm}.exe")
+		e = ElfParser(self.m_dir / "mapping" / f"{fnm}.exe")
+
+		self.meta = e.get_meta("node_context", self.m_dir / "mapping" / "context_map.tsv")
+
 
 	def map_it(self, n, ** arg) :
 		from unitest.macco import unroll_file

@@ -15,9 +15,9 @@ function push_pythonpath() {
 export UNITEST_root_DIR=${0:a:h}
 export UNITEST_working_DIR=${1:a}
 
-if [[ ! -d $UNITEST_working_DIR ]]
+if [[ ! -d $UNITEST_working_DIR/template ]]
 then 
-	echo "please specify the wording dir"
+	echo "please specify a working dir"
 	return
 fi
 
