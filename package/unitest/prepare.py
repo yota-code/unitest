@@ -2,10 +2,11 @@
 
 import os
 import re
+import shutil
 
 from cc_pathlib import Path
 
-import shutil
+import xxhash
 
 def copy_dir(src_dir, dst_dir, recurse=False, hidden=False, dry_run=True, delete=False) :
 	d_lst = list()
@@ -36,7 +37,7 @@ class UnitestPrepare() :
 		self.t_dir = self.w_dir / "template"
 		self.m_dir = self.w_dir / "model" / self.node
 
-		self.w_dir.run('rsync', "-av", "--checksum", f"{self.t_dir}/", self.m_dir)
+		self.w_dir.run('rsync', "-av", "--exclude", ".git", "--checksum", f"{self.t_dir}/", self.m_dir)
 
 		self.copy_scade()
 		self.tweak_scade()
@@ -185,8 +186,18 @@ class UnitestPrepare() :
 
 		e = ElfParser(self.m_dir / "mapping" / f"{fnm}.exe")
 
-		self.meta = e.get_meta("node_context", self.m_dir / "mapping" / "context_map.tsv")
 
+		self.meta = e.get_meta("node_context")
+
+		pth = self.m_dir / "mapping" / "context_map.tsv"
+
+		self.meta.dump(pth, False, False)
+		hsh = xxhash.xxh3_64(pth.read_bytes()).intdigest()
+		self.meta.version = f"{hsh:016X}"
+
+		hlk = pth.with_suffix(f".{hsh:016X}.tsv")
+		if not hlk.is_file() :
+			hlk.hardlink_to(pth)
 
 	def map_it(self, n, ** arg) :
 		from unitest.macco import unroll_file
